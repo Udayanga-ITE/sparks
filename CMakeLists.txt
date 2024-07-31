@@ -39,6 +39,26 @@ endif()
 
 message(STATUS "DEPENDS_PREFIX: ${DEPENDS_PREFIX}")
 
+if(NOT MANUAL_SUBMODULES)
+  find_package(Git)
+  if(GIT_FOUND)
+    function (check_submodule relative_path)
+      execute_process(COMMAND git rev-parse "HEAD" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${relative_path} OUTPUT_VARIABLE localHead)
+      execute_process(COMMAND git rev-parse "HEAD:${relative_path}" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} OUTPUT_VARIABLE checkedHead)
+      string(COMPARE EQUAL "${localHead}" "${checkedHead}" upToDate)
+      if (upToDate)
+        message(STATUS "Submodule '${relative_path}' is up-to-date")
+      else()
+        message(FATAL_ERROR "Submodule '${relative_path}' is not up-to-date. Please update all submodules with\ngit submodule update --init --force\nor run cmake with -DMANUAL_SUBMODULES=1\n")
+      endif()
+    endfunction ()
+    
+    message(STATUS "Checking submodules")
+    check_submodule(external/miniupnp)
+    check_submodule(external/randomx)
+  endif()
+endif()
+
 if(DEFINED DEPENDS_PREFIX)
     include_directories(${DEPENDS_PREFIX}/include)
     include_directories(${DEPENDS_PREFIX}/include/QtWidgets)
@@ -49,6 +69,9 @@ add_definitions(
         -DENABLE_STACKTRACES=1
         -DENABLE_WALLET=1
 )
+
+# Add RandomX library
+add_subdirectory(src/randomx EXCLUDE_FROM_ALL)
 
 file(GLOB SOURCE_FILES
         src/*.cpp
@@ -105,3 +128,6 @@ file(GLOB SOURCE_FILES
 # Link RandomX library
 target_link_libraries(sparkspay PRIVATE lib/librandomx.a)
 add_executable(sparks ${SOURCE_FILES})
+
+# Link RandomX library with your project
+target_link_libraries(sparks src/randomx)
