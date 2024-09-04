@@ -54,7 +54,6 @@ if(NOT MANUAL_SUBMODULES)
     endfunction ()
     
     message(STATUS "Checking submodules")
-    check_submodule(external/miniupnp)
     check_submodule(external/randomx)
   endif()
 endif()
@@ -71,7 +70,7 @@ add_definitions(
 )
 
 # Add RandomX library
-add_subdirectory(src/randomx EXCLUDE_FROM_ALL)
+add_subdirectory(external)
 
 file(GLOB SOURCE_FILES
         src/*.cpp
@@ -130,4 +129,4 @@ target_link_libraries(sparkspay PRIVATE lib/librandomx.a)
 add_executable(sparks ${SOURCE_FILES})
 
 # Link RandomX library with your project
-target_link_libraries(sparks src/randomx)
+target_link_libraries(sparks external/RandomX)
