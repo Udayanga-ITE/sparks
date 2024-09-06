@@ -11,6 +11,68 @@
 #include <tinyformat.h>
 #include <crypto/common.h>
 #include <crypto/neoscrypt.h>
+#include <crypto/randomx/randomx.h>
+
+// Size of RandomX hash output
+const int HASH_SIZE = 32;
+
+// Function to initialize RandomX cache
+randomx_cache* initializeRandomXCache(const void* key, size_t keySize) {
+    randomx_cache *cache = randomx_alloc_cache(RANDOMX_FLAG_DEFAULT);
+    if (cache == nullptr) {
+        std::cerr << "Failed to allocate RandomX cache." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // Initialize cache with key (can be a seed or unique identifier for the block)
+    randomx_init_cache(cache, key, keySize);
+    return cache;
+}
+
+// Function to initialize RandomX dataset (optional but speeds up mining on large datasets)
+randomx_dataset* initializeRandomXDataset(randomx_cache* cache) {
+    randomx_dataset *dataset = randomx_alloc_dataset(RANDOMX_FLAG_DEFAULT);
+    if (dataset == nullptr) {
+        std::cerr << "Failed to allocate RandomX dataset." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // Populate dataset (you can do this over a range of items)
+    uint32_t startItem = 0;
+    uint32_t itemCount = randomx_dataset_item_count();
+    randomx_init_dataset(dataset, cache, startItem, itemCount);
+    return dataset;
+}
+
+// Function to mine with RandomX
+void mineWithRandomX(const void* input, size_t inputSize, uint8_t* hash_output) {
+    // Step 1: Create a key or seed (example: using static key)
+    const char* key = "my_randomx_seed";
+    size_t keySize = strlen(key);
+
+    // Step 2: Initialize RandomX cache
+    randomx_cache *cache = initializeRandomXCache(key, keySize);
+
+    // Step 3 (Optional): Initialize RandomX dataset (only if you need to use a dataset)
+    // randomx_dataset *dataset = initializeRandomXDataset(cache);
+
+    // Step 4: Create RandomX VM with the cache (flags can include JIT, AES, etc.)
+    randomx_vm *vm = randomx_create_vm(RANDOMX_FLAG_DEFAULT | RANDOMX_FLAG_JIT, cache, nullptr);
+    if (vm == nullptr) {
+        std::cerr << "Failed to create RandomX VM." << std::endl;
+        randomx_release_cache(cache);
+        exit(EXIT_FAILURE);
+    }
+
+    // Step 5: Calculate the hash
+    randomx_calculate_hash(vm, input, inputSize, hash_output);
+
+    // Step 6: Destroy the VM and clean up
+    randomx_destroy_vm(vm);
+    randomx_release_cache(cache);
+    // If you used a dataset, remember to release it
+    // randomx_release_dataset(dataset);
+}
 
 uint256 CBlockHeader::GetHash() const
 {

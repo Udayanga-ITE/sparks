@@ -15,6 +15,7 @@ include_directories(
         src/qt/forms
         src/leveldb/include
         src/univalue/include
+        src/crypto/randomx
 )
 
 if(UNIX AND NOT APPLE)
@@ -101,4 +102,6 @@ file(GLOB SOURCE_FILES
         src/zmq/*.h
         )
 
+# Link RandomX library
+target_link_libraries(sparkspay PRIVATE lib/librandomx.a)
 add_executable(sparks ${SOURCE_FILES})
