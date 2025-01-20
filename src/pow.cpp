@@ -179,6 +179,11 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return GetNextWorkRequiredBTC(pindexLast, pblock, params);
     }
 
+    // Before the fork, use existing NeoScrypt difficulty logic
+    if (pindexLast->nTime < params.nYespowerR16StartTime) {
+        return GetNextWorkRequiredBTC(pindexLast, pblock, params);
+    }
+
     // Note: GetNextWorkRequiredBTC has it's own special difficulty rule,
     // so we only apply this to post-BTC algos.
     if (params.fPowNoRetargeting) {
