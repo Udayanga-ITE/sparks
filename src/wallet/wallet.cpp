@@ -4326,6 +4326,12 @@ void CWallet::AutoCombineDust()
         if (vRewardCoins.size() <= 1)
             continue;
 
+        //we cannot combine lower or equal to (threshold + margin)
+        if (nTotalRewardsValue <= nAutoCombineThresholdMargin) {
+            LogPrintf("We cannot combine Rewards Value %d <= (Threshold + Margin) %d\n",nTotalRewardsValue,nAutoCombineThresholdMargin);
+            continue;
+        }
+
         std::vector<CRecipient> vecSend;
         const CScript& scriptPubKey = GetScriptForDestination(entry.first);
         CRecipient recipient = {scriptPubKey, nTotalRewardsValue, false};
