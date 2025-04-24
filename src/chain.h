@@ -189,6 +189,7 @@ public:
     uint32_t nTime{0};
     uint32_t nBits{0};
     uint32_t nNonce{0};
+    BlockAlgo blockAlgo{BlockAlgo::NEOSCRYPT};
 
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     int32_t nSequenceId{0};
@@ -205,7 +206,8 @@ public:
           hashMerkleRoot{block.hashMerkleRoot},
           nTime{block.nTime},
           nBits{block.nBits},
-          nNonce{block.nNonce}
+          nNonce{block.nNonce},
+          blockAlgo{block.blockAlgo}
     {
     }
 
@@ -237,6 +239,7 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+        block.blockAlgo      = blockAlgo;
         return block;
     }
 
@@ -257,6 +260,11 @@ public:
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
+    }
+
+    BlockAlgo GetBlockAlgo() const
+    {
+        return blockAlgo;
     }
 
     int64_t GetBlockTimeMax() const
@@ -358,6 +366,16 @@ public:
         READWRITE(obj.nTime);
         READWRITE(obj.nBits);
         READWRITE(obj.nNonce);
+        // Only read blockAlgo if there's more data in the stream
+        // if (ser_action.ForRead() && !s.empty()) {
+        //     try {
+        //         READWRITE(obj.blockAlgo);
+        //     } catch (...) {
+                READWRITE(BlockAlgo::NEOSCRYPT);
+        //     }
+        // } else {
+        //     READWRITE(obj.blockAlgo);
+        // }
     }
 
     uint256 GetBlockHash() const
@@ -371,6 +389,7 @@ public:
         block.nTime           = nTime;
         block.nBits           = nBits;
         block.nNonce          = nNonce;
+        block.blockAlgo       = blockAlgo;
         return block.GetHash();
     }
 

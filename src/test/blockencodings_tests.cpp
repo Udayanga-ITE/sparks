@@ -271,6 +271,7 @@ BOOST_AUTO_TEST_CASE(EmptyBlockRoundTripTest)
     block.nVersion = 42;
     block.hashPrevBlock = InsecureRand256();
     block.nBits = 0x207fffff;
+    block.blockAlgo = BlockAlgo::NEOSCRYPT;
 
     bool mutated;
     block.hashMerkleRoot = BlockMerkleRoot(block, &mutated);

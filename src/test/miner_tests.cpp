@@ -255,6 +255,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
                 txFirst.push_back(pblock->vtx[0]);
             pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
             pblock->nNonce = blockinfo[i].nonce;
+            pblock->blockAlgo = BlockAlgo::NEOSCRYPT;
 
             // This will usually succeed in the first round as we take the nonce from blockinfo
             // It's however useful when adding new blocks with unknown nonces (you should add the found block to blockinfo)

@@ -73,6 +73,7 @@ CBlock BuildChainTestingSetup::CreateBlock(const CBlockIndex* prev,
     CBlock& block = pblocktemplate->block;
     block.hashPrevBlock = prev->GetBlockHash();
     block.nTime = prev->nTime + 1;
+    block.blockAlgo = BlockAlgo::NEOSCRYPT;
 
     // Replace mempool-selected txns with just coinbase plus passed-in txns:
     block.vtx.resize(1);

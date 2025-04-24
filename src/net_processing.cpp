@@ -2366,6 +2366,7 @@ void PeerManagerImpl::SendBlockTransactions(CNode& pfrom, const CBlock& block, c
 
 void PeerManagerImpl::ProcessHeadersMessage(CNode& pfrom, const std::vector<CBlockHeader>& headers, bool via_compact_block)
 {
+    std::cout << "------------------- Process headers message ------------------" << std::endl;
     const CNetMsgMaker msgMaker(pfrom.GetCommonVersion());
     size_t nCount = headers.size();
 
@@ -2864,6 +2865,7 @@ void PeerManagerImpl::ProcessMessage(
     int64_t nTimeReceived,
     const std::atomic<bool>& interruptMsgProc)
 {
+    std::cout << "------------------- Process message ------------------" << msg_type << std::endl;
     LogPrint(BCLog::NET, "received: %s (%u bytes) peer=%d\n", SanitizeString(msg_type), vRecv.size(), pfrom.GetId());
     statsClient.inc("message.received." + SanitizeString(msg_type), 1.0f);
 
@@ -4043,6 +4045,7 @@ void PeerManagerImpl::ProcessMessage(
     }
 
     if (msg_type == NetMsgType::HEADERS || msg_type == NetMsgType::HEADERS2) {
+        std::cout << "------------------- Process message : headers2 ------------------" << std::endl;
         // Ignore headers received while importing
         if (fImporting || fReindex) {
             LogPrint(BCLog::NET, "Unexpected headers message received from peer %d\n", pfrom.GetId());
@@ -4053,6 +4056,7 @@ void PeerManagerImpl::ProcessMessage(
 
         // Bypass the normal CBlock deserialization, as we don't want to risk deserializing 2000 full blocks.
         unsigned int nCount = ReadCompactSize(vRecv);
+        std::cout << "------------------- Process message ------------------" << nCount << " ~ " << MAX_HEADERS_RESULTS << std::endl;
         if (nCount > MAX_HEADERS_RESULTS) {
             Misbehaving(pfrom.GetId(), 20, strprintf("headers message size = %u", nCount));
             return;
@@ -4065,8 +4069,10 @@ void PeerManagerImpl::ProcessMessage(
                 ReadCompactSize(vRecv); // ignore tx count; assume it is 0.
             }
         } else if (msg_type == NetMsgType::HEADERS2) {
+            std::cout << "------------------- CompressibleBlockHeader ------------------" << std::endl;
             std::list<int32_t> last_unique_versions;
             for (unsigned int n = 0; n < nCount; n++) {
+                std::cout << "------------------- CompressibleBlockHeader ------------------" << nCount << " : " << n << std::endl;
                 CompressibleBlockHeader block_header_compressed;
                 vRecv >> block_header_compressed;
                 block_header_compressed.Uncompress(headers, last_unique_versions);
@@ -4074,6 +4080,7 @@ void PeerManagerImpl::ProcessMessage(
             }
         }
 
+        std::cout << "------------------- Calling ProcessHeadersMessage ------------------" << std::endl;
         return ProcessHeadersMessage(pfrom, headers, /*via_compact_block=*/false);
     }
 

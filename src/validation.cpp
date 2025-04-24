@@ -4264,6 +4264,7 @@ bool BlockManager::AcceptBlockHeader(const CBlockHeader& block, BlockValidationS
 // Exposed wrapper for AcceptBlockHeader
 bool ChainstateManager::ProcessNewBlockHeaders(const std::vector<CBlockHeader>& headers, BlockValidationState& state, const CChainParams& chainparams, const CBlockIndex** ppindex)
 {
+    std::cout << "--------------- Process New Block Headers -----------------" << std::endl;
     assert(std::addressof(::ChainstateActive()) == std::addressof(ActiveChainstate()));
     AssertLockNotHeld(cs_main);
     {
@@ -4273,7 +4274,7 @@ bool ChainstateManager::ProcessNewBlockHeaders(const std::vector<CBlockHeader>& 
             bool accepted = m_blockman.AcceptBlockHeader(
                 header, state, chainparams, &pindex);
             ActiveChainstate().CheckBlockIndex();
-
+            std::cout << "Block Header Acceptation : " << accepted << std::endl;
             if (!accepted) {
                 return false;
             }
@@ -4283,7 +4284,9 @@ bool ChainstateManager::ProcessNewBlockHeaders(const std::vector<CBlockHeader>& 
         }
     }
     if (NotifyHeaderTip(ActiveChainstate())) {
+        std::cout << "Synchronizing 01" << std::endl;
         if (ActiveChainstate().IsInitialBlockDownload() && ppindex && *ppindex) {
+            std::cout << "Synchronizing 02" << std::endl;
             const CBlockIndex& last_accepted{**ppindex};
             const int64_t blocks_left{(GetTime() - last_accepted.GetBlockTime()) / chainparams.GetConsensus().nPowTargetSpacing};
             const double progress{100.0 * last_accepted.nHeight / (last_accepted.nHeight + blocks_left)};

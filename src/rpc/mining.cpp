@@ -805,6 +805,8 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     UpdateTime(pblock, consensusParams, pindexPrev);
     pblock->nNonce = 0;
 
+    pblock->blockAlgo = BlockAlgo::NEOSCRYPT;
+
     UniValue aCaps(UniValue::VARR); aCaps.push_back("proposal");
 
     UniValue transactions(UniValue::VARR);
@@ -921,6 +923,7 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     result.pushKV("sizelimit", (int64_t)MaxBlockSize(fDIP0001Active_context));
     result.pushKV("curtime", pblock->GetBlockTime());
     result.pushKV("bits", strprintf("%08x", pblock->nBits));
+    result.pushKV("blockalgo", BlockAlgoToString(pblock->blockAlgo));
     result.pushKV("previousbits", strprintf("%08x", pblocktemplate->nPrevBits));
     result.pushKV("height", (int64_t)(pindexPrev->nHeight+1));
 

@@ -13,6 +13,14 @@
 #include <cstddef>
 #include <type_traits>
 
+enum class BlockAlgo {
+    NEOSCRYPT,
+    YESPOWER_R16
+};
+
+template <>
+struct is_serializable_enum<BlockAlgo> : std::true_type {};
+
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work
  * requirements.  When they solve the proof-of-work, they broadcast the block
@@ -30,13 +38,14 @@ public:
     uint32_t nTime;
     uint32_t nBits;
     uint32_t nNonce;
+    BlockAlgo blockAlgo;
 
     CBlockHeader()
     {
         SetNull();
     }
 
-    SERIALIZE_METHODS(CBlockHeader, obj) { READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot, obj.nTime, obj.nBits, obj.nNonce); }
+    SERIALIZE_METHODS(CBlockHeader, obj) { READWRITE(obj.nVersion, obj.hashPrevBlock, obj.hashMerkleRoot, obj.nTime, obj.nBits, obj.nNonce, BlockAlgo::NEOSCRYPT); }
 
     void SetNull()
     {
@@ -46,6 +55,7 @@ public:
         nTime = 0;
         nBits = 0;
         nNonce = 0;
+        blockAlgo = BlockAlgo::NEOSCRYPT;
     }
 
     bool IsNull() const
@@ -176,6 +186,7 @@ struct CompressibleBlockHeader : CBlockHeader {
             READWRITE(obj.nBits);
         }
         READWRITE(obj.nNonce);
+        READWRITE(obj.blockAlgo);
     }
 
     void Compress(const std::vector<CompressibleBlockHeader>& previous_blocks, std::list<int32_t>& last_unique_versions);
@@ -225,6 +236,7 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+        block.blockAlgo      = blockAlgo;
         return block;
     }
 
@@ -262,5 +274,7 @@ struct CBlockLocator
         return vHave.empty();
     }
 };
+
+std::string BlockAlgoToString (BlockAlgo blockAlgo);
 
 #endif // BITCOIN_PRIMITIVES_BLOCK_H

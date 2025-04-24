@@ -23,12 +23,13 @@ uint256 CBlockHeader::GetHash() const
 std::string CBlock::ToString() const
 {
     std::stringstream s;
-    s << strprintf("CBlock(hash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
+    s << strprintf("CBlock(hash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, blockAlgo=%s, vtx=%u)\n",
         GetHash().ToString(),
         nVersion,
         hashPrevBlock.ToString(),
         hashMerkleRoot.ToString(),
-        nTime, nBits, nNonce,
+        nTime, nBits, nNonce, 
+        BlockAlgoToString(blockAlgo),
         vtx.size());
     for (const auto& tx : vtx) {
         s << "  " << tx->ToString() << "\n";
@@ -96,6 +97,7 @@ void CompressibleBlockHeader::Compress(const std::vector<CompressibleBlockHeader
 
 void CompressibleBlockHeader::Uncompress(const std::vector<CBlockHeader>& previous_blocks, std::list<int32_t>& last_unique_versions)
 {
+    std::cout << "------------------- Uncompressed nVersion 01 : " << nVersion << std::endl;
     if (previous_blocks.empty()) {
         // First block in chain is always uncompressed
         SaveVersionAsMostRecent(last_unique_versions, nVersion);
@@ -107,11 +109,13 @@ void CompressibleBlockHeader::Uncompress(const std::vector<CBlockHeader>& previo
 
     // Uncompress version
     if (bit_field.IsVersionCompressed()) {
+        std::cout << "------------------- Uncompressed nVersion 02 : " << nVersion << std::endl;
         const auto version_offset = bit_field.GetVersionOffset();
         if (version_offset <= last_unique_versions.size()) {
             auto version_it = last_unique_versions.begin();
             std::advance(version_it, version_offset - 1);
             nVersion = *version_it;
+            std::cout << "------------------- Uncompressed nVersion 03 : " << nVersion << std::endl;
             MarkVersionAsMostRecent(last_unique_versions, version_it);
         }
     } else {
@@ -132,5 +136,17 @@ void CompressibleBlockHeader::Uncompress(const std::vector<CBlockHeader>& previo
     // Uncompress n_bits
     if (bit_field.IsCompressed(CompressedHeaderBitField::Flag::NBITS)) {
         nBits = last_block.nBits;
+    }
+    std::cout << "------------------- Uncompressed ------------------" << nVersion << " ~ " << hashPrevBlock.ToString() << std::endl;
+}
+
+std::string BlockAlgoToString (BlockAlgo blockAlgo) {
+    switch (blockAlgo)
+    {
+    case BlockAlgo::YESPOWER_R16:
+        return "YESPOWER_R16";
+    case BlockAlgo::NEOSCRYPT:    
+    default:
+        return "NEOSCRYPT";
     }
 }
