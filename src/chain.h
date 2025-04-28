@@ -11,6 +11,7 @@
 #include <flatfile.h>
 #include <primitives/block.h>
 #include <uint256.h>
+#include <chainparams.h>
 
 #include <vector>
 
