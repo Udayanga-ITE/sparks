@@ -56,9 +56,7 @@ public:
         return (nBits == 0);
     }
 
-    uint256 GetHash(const Consensus::Params& consensusParams) const;
-
-    uint256 GetHash(const BlockAlgo& blockAlgo) const;
+    uint256 GetHash(const Consensus::Params& consensusParams, CChain& chain) const;
 
     int64_t GetBlockTime() const
     {

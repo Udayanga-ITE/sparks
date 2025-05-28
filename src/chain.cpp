@@ -192,8 +192,7 @@ const CBlockIndex* LastCommonAncestor(const CBlockIndex* pa, const CBlockIndex* 
     return pa;
 }
 
-BlockAlgo GetBlockAlgo(const Consensus::Params& consensusParams) {
-    const CBlockIndex* pindex = ChainActive().Tip(); 
+BlockAlgo GetBlockAlgo(const Consensus::Params& consensusParams, const CBlockIndex* pindex) {
     if (pindex && pindex->pprev) {
         const CBlockIndex* pindexPrev = pindex->pprev;
         if (pindexPrev && DeploymentActiveAt(*pindexPrev, consensusParams, Consensus::DEPLOYMENT_YESPOWERR16)) {
