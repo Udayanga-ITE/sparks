@@ -21,7 +21,7 @@
 
 static bool IsQuorumDKGEnabled(const CSporkManager& sporkman)
 {
-    return sporkman.IsSporkActive(SPORK_17_QUORUM_DKG_ENABLED);
+    return sporkman.IsSporkActive(SPORK_18_QUORUM_DKG_ENABLED);
 }
 
 namespace llmq

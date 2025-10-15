@@ -35,6 +35,8 @@ static constexpr unsigned int MAX_STANDARD_TX_SIGOPS{4000};
 static constexpr unsigned int DEFAULT_MAX_MEMPOOL_SIZE{300};
 /** Default for -incrementalrelayfee, which sets the minimum feerate increase for mempool limiting or BIP 125 replacement **/
 static constexpr unsigned int DEFAULT_INCREMENTAL_RELAY_FEE{1000};
+//! -mindatatxfee default
+static const CAmount DEFAULT_DATA_TRANSACTION_MINFEE = {1000000};
 /** Default for -bytespersigop */
 static constexpr unsigned int DEFAULT_BYTES_PER_SIGOP{20};
 /** Default for -permitbaremultisig */
