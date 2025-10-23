@@ -1792,7 +1792,7 @@ static RPCHelpMan bls_help()
 }
 
 #ifdef ENABLE_WALLET
-void datatx_publish_help(CWallet* const pwallet)
+static void datatx_publish_help(CWallet* const pwallet)
 {
     throw std::runtime_error(
             "datatx publish \"data\" \"feeSourceAddress\"\n"
@@ -1807,7 +1807,7 @@ void datatx_publish_help(CWallet* const pwallet)
     );
 }
 
-UniValue datatx_publish(const JSONRPCRequest& request, const ChainstateManager& chainman)
+static UniValue datatx_publish(const JSONRPCRequest& request, const ChainstateManager& chainman)
 {
     std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
     CWallet* const pwallet = wallet.get();
@@ -1816,11 +1816,11 @@ UniValue datatx_publish(const JSONRPCRequest& request, const ChainstateManager& 
     CHECK_NONFATAL(node.chain_helper);
     CChainstateHelper& chain_helper = *node.chain_helper;
 
-    if (request.fHelp || request.params.size() != 3) {
+    if (request.params.size() != 3) {
         datatx_publish_help(pwallet);
     }
 
-    EnsureWalletIsUnlocked(pwallet);
+    EnsureWalletIsUnlocked(*pwallet);
 
     CMutableTransaction tx;
     tx.nVersion = 3;
@@ -1835,13 +1835,13 @@ UniValue datatx_publish(const JSONRPCRequest& request, const ChainstateManager& 
     if (!IsValidDestination(feeSourceDest))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Sparks address: ") + request.params[2].get_str());
 
-    FundSpecialTx(pwallet, tx, dtx, feeSourceDest, node);
+    FundSpecialTx(*pwallet, tx, dtx, feeSourceDest, node);
     SetTxPayload(tx, dtx);
     return SignAndSendSpecialTx(request, chain_helper, chainman, tx);
 }
 #endif
 
-UniValue datatx_get(const JSONRPCRequest& request)
+static UniValue datatx_get(const JSONRPCRequest& request)
 {
     const NodeContext& node = EnsureAnyNodeContext(request.context);
     const ArgsManager& m_args = *node.args;
@@ -1849,7 +1849,7 @@ UniValue datatx_get(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_REQUEST, "Your wallet is being ran with governance validation disabled. Can't use this command.\nThis is expected because you are running a pruned node.");
     }
 
-    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
+    if (request.params.size() != 3)
         throw std::runtime_error(
             "datatx get \"txid\"\n"
 
@@ -1900,45 +1900,43 @@ UniValue datatx_get(const JSONRPCRequest& request)
     return result;
 }
 
-[[ noreturn ]] void datatx_help()
+static RPCHelpMan datatx()
 {
-    throw std::runtime_error(
-            "datatx \"command\" ...\n"
-            "Set of commands to execute datatx related actions.\n"
-            "To get help on individual commands, use \"help datatx command\".\n"
-            "\nArguments:\n"
-            "1. \"command\"        (string, required) The command to execute\n"
-            "\nAvailable commands:\n"
-#ifdef ENABLE_WALLET
+    return RPCHelpMan{
+        "datatx",
+        "Set of commands to execute datatx related actions.\n"
+        "To get help on individual commands, use \"datatx <command>\".\n",
+        {
+            {"command", RPCArg::Type::STR, RPCArg::Optional::NO, "\nAvailable commands:\n"
+                #ifdef ENABLE_WALLET
+                "  publish   - publish a datatx\n"
+                #endif
+                "  get       - get a datatx payload by txid",
+            },
+        },
+        RPCResults{},
+        RPCExamples{
+            #ifdef ENABLE_WALLET
+            HelpExampleCli("datatx", "\"publish\" \"data\" \"feeSourceAddress\"") +
+            #endif
+            HelpExampleCli("datatx", "\"get\" \"<txid>\"")
+        },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {    
+            const ChainstateManager& chainman = EnsureAnyChainman(request.context);
 
-            "publish   - publish a datatx\n"
-#endif
-            "get   - get a datatx payload\n"
-    );
-}
+            const std::string& command = request.params[0].get_str();
+            #ifdef ENABLE_WALLET
+            if (command == "publish") {
+                return datatx_publish(request, chainman);
+            }
+            #endif
+            if (command == "get") {
+                return datatx_get(request);
+            }
 
-UniValue datatx(const JSONRPCRequest& request)
-{
-    const ChainstateManager& chainman = EnsureAnyChainman(request.context);
-
-    if (request.fHelp && request.params.empty()) {
-        datatx_help();
-    }
-
-    std::string command;
-    if (!request.params[0].isNull()) {
-        command = request.params[0].get_str();
-    }
-
-#ifdef ENABLE_WALLET
-    if (command == "publish") {
-        return datatx_publish(request, chainman);
-    }
-#endif
-    if (command == "get") {
-        return datatx_get(request);
-    }
-    datatx_help();
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Unknown command: " + command);
+        }
+    };   
 }
 
 void RegisterEvoRPCCommands(CRPCTable &tableRPC)

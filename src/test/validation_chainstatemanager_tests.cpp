@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(chainstatemanager)
     // Unlike c1, which doesn't have any blocks. Gets us different tip, height.
     c2.LoadGenesisBlock();
     BlockValidationState dummy_state;
-    BOOST_CHECK(c2.ActivateBestChain(dummy_state, *m_node.sporkman, nullptr));
+    BOOST_CHECK(c2.ActivateBestChain(dummy_state, *m_node.sporkman.get(), nullptr));
 
     BOOST_CHECK(manager.IsSnapshotActive());
     BOOST_CHECK(WITH_LOCK(::cs_main, return !manager.IsSnapshotValidated()));
@@ -401,7 +401,7 @@ BOOST_FIXTURE_TEST_CASE(chainstatemanager_loadblockindex, TestChain100Setup)
     BOOST_CHECK_EQUAL(expected_assumed_valid, num_assumed_valid);
 
     CChainState& cs2 = WITH_LOCK(::cs_main,
-        return chainman.InitializeChainstate(&mempool, *m_node.evodb, m_node.chain_helper, GetRandHash()));
+        return chainman.InitializeChainstate(&mempool, *m_node.evodb, m_node.chain_helper, *m_node.sporkman, GetRandHash()));
 
     reload_all_block_indexes();
 

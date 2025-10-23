@@ -972,12 +972,12 @@ bool CCoinJoinClientSession::DoAutomaticDenominating(ChainstateManager& chainman
     } // LOCK(m_wallet->cs_wallet);
 
     // Always attempt to join an existing queue
-    if (JoinExistingQueue(nBalanceNeedsAnonymized, connman, active_chainstate.m_chain)) {
+    if (JoinExistingQueue(nBalanceNeedsAnonymized, connman, chainman.ActiveChain())) {
         return true;
     }
 
     // If we were unable to find/join an existing queue then start a new one.
-    if (StartNewQueue(nBalanceNeedsAnonymized, connman, active_chainstate.m_chain)) return true;
+    if (StartNewQueue(nBalanceNeedsAnonymized, connman, chainman.ActiveChain())) return true;
 
     strAutoDenomResult = _("No compatible Masternode found.");
     return false;
@@ -1918,7 +1918,7 @@ void CoinJoinWalletManager::Add(const std::shared_ptr<CWallet>& wallet)
         LOCK(cs_wallet_manager_map);
         m_wallet_manager_map.try_emplace(wallet->GetName(),
                                          std::make_unique<CCoinJoinClientManager>(wallet, *this, m_dmnman, m_mn_metaman,
-                                                                                  m_spork_manager, m_mn_sync, m_isman, m_queueman,
+                                                                                  m_mn_sync, m_spork_manager, m_isman, m_queueman,
                                                                                   m_is_masternode));
     }
     g_wallet_init_interface.InitCoinJoinSettings(*this);

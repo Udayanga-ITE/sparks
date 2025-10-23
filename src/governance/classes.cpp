@@ -89,7 +89,7 @@ CSuperblock::
 }
 
 CSuperblock::
-    CSuperblock(CGovernanceManager& govman, uint256& nHash, CSporkManager& spork_manager) :
+    CSuperblock(const CGovernanceObject& govObj, uint256& nHash, CSporkManager& spork_manager) :
     nGovObjHash(nHash),
     nBlockHeight(0),
     nStatus(SeenObjectStatus::Unknown),

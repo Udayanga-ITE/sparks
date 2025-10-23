@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE(coinstatsindex_unclean_shutdown, TestChain100Setup)
     CChainState& chainstate = Assert(m_node.chainman)->ActiveChainstate();
     const CChainParams& params = Params();
     {
-        CoinStatsIndex index{1 << 20};
+        CoinStatsIndex index{1 << 20, *m_node.sporkman.get()};
         BOOST_REQUIRE(index.Start(chainstate));
         IndexWaitSynced(index);
         std::shared_ptr<const CBlock> new_block;
@@ -99,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(coinstatsindex_unclean_shutdown, TestChain100Setup)
             BOOST_CHECK(CheckBlock(block, state, params.GetConsensus()));
             BOOST_CHECK(chainstate.AcceptBlock(new_block, state, &new_block_index, true, nullptr, nullptr));
             CCoinsViewCache view(&chainstate.CoinsTip());
-            BOOST_CHECK(chainstate.ConnectBlock(block, state, new_block_index, view));
+            BOOST_CHECK(chainstate.ConnectBlock(block, state, new_block_index, view, *m_node.sporkman.get()));
         }
         // Send block connected notification, then stop the index without
         // sending a chainstate flushed notification. Prior to #24138, this
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(coinstatsindex_unclean_shutdown, TestChain100Setup)
     }
 
     {
-        CoinStatsIndex index{1 << 20};
+        CoinStatsIndex index{1 << 20, *m_node.sporkman.get()};
         // Make sure the index can be loaded.
         BOOST_REQUIRE(index.Start(chainstate));
         index.Stop();

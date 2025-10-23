@@ -359,7 +359,7 @@ public:
      *
      *   - Does this block have a non-executed and activated trigger?
      */
-    bool IsSuperblockTriggered(const CDeterministicMNList& tip_mn_list, int nBlockHeight);
+    bool IsSuperblockTriggered(const CDeterministicMNList& tip_mn_list, int nBlockHeight, const CChain& chain);
 
     /**
      *   Get Superblock Payments
@@ -367,14 +367,14 @@ public:
      *   - Returns payments for superblock
      */
     bool GetSuperblockPayments(const CDeterministicMNList& tip_mn_list, int nBlockHeight,
-                               std::vector<CTxOut>& voutSuperblockRet);
+                               std::vector<CTxOut>& voutSuperblockRet, const CBlockIndex& pindex);
 
     bool IsValidSuperblock(const CChain& active_chain, const CDeterministicMNList& tip_mn_list,
                            const CTransaction& txNew, int nBlockHeight, CAmount blockReward);
 
 private:
-    void ExecuteBestSuperblock(const CDeterministicMNList& tip_mn_list, int nBlockHeight);
-    bool GetBestSuperblock(const CDeterministicMNList& tip_mn_list, CSuperblock_sptr& pSuperblockRet, int nBlockHeight)
+    void ExecuteBestSuperblock(const CDeterministicMNList& tip_mn_list, int nBlockHeight, const CBlockIndex& pindex);
+    bool GetBestSuperblock(const CDeterministicMNList& tip_mn_list, CSuperblock_sptr& pSuperblockRet, int nBlockHeight, const CBlockIndex& pindex)
         EXCLUSIVE_LOCKS_REQUIRED(cs);
 
     std::optional<const CSuperblock> CreateSuperblockCandidate(int nHeight, const CBlockIndex& pindex, const CChain& chain) const;

@@ -1660,7 +1660,7 @@ bool CGovernanceManager::AddNewTrigger(uint256 nHash)
         if (!pGovObj) {
             throw std::runtime_error("CSuperblock: Failed to find Governance Object");
         }
-        pSuperblock = std::make_shared<CSuperblock>(*pGovObj, nHash);
+        pSuperblock = std::make_shared<CSuperblock>(*pGovObj, nHash, m_spork_manager);
     } catch (std::exception& e) {
         LogPrintf("CGovernanceManager::%s -- Error creating superblock: %s\n", __func__, e.what());
         return false;
@@ -1768,7 +1768,7 @@ std::vector<CSuperblock_sptr> CGovernanceManager::GetActiveTriggers() const
     return vecResults;
 }
 
-bool CGovernanceManager::IsSuperblockTriggered(const CDeterministicMNList& tip_mn_list, int nBlockHeight)
+bool CGovernanceManager::IsSuperblockTriggered(const CDeterministicMNList& tip_mn_list, int nBlockHeight, const CChain& chain)
 {
     LogPrint(BCLog::GOBJECT, "IsSuperblockTriggered -- Start nBlockHeight = %d\n", nBlockHeight);
     if (!CSuperblock::IsValidBlockHeight(nBlockHeight)) {
@@ -1807,7 +1807,7 @@ bool CGovernanceManager::IsSuperblockTriggered(const CDeterministicMNList& tip_m
 
         // MAKE SURE THIS TRIGGER IS ACTIVE VIA FUNDING CACHE FLAG
 
-        pObj->UpdateSentinelVariables(tip_mn_list);
+        pObj->UpdateSentinelVariables(tip_mn_list, chain);
 
         if (pObj->IsSetCachedFunding()) {
             LogPrint(BCLog::GOBJECT, "IsSuperblockTriggered -- fCacheFunding = true, returning true\n");
@@ -1822,7 +1822,7 @@ bool CGovernanceManager::IsSuperblockTriggered(const CDeterministicMNList& tip_m
 
 
 bool CGovernanceManager::GetBestSuperblock(const CDeterministicMNList& tip_mn_list, CSuperblock_sptr& pSuperblockRet,
-                                           int nBlockHeight)
+                                           int nBlockHeight, const CBlockIndex& pindex)
 {
     if (!CSuperblock::IsValidBlockHeight(nBlockHeight)) {
         return false;
@@ -1844,7 +1844,7 @@ bool CGovernanceManager::GetBestSuperblock(const CDeterministicMNList& tip_mn_li
 
         // DO WE HAVE A NEW WINNER?
 
-        int nTempYesCount = pObj->GetAbsoluteYesCount(tip_mn_list, VOTE_SIGNAL_FUNDING);
+        int nTempYesCount = pObj->GetAbsoluteYesCount(tip_mn_list, VOTE_SIGNAL_FUNDING, pindex);
         if (nTempYesCount > nYesCount) {
             nYesCount = nTempYesCount;
             pSuperblockRet = pSuperblock;
@@ -1855,14 +1855,14 @@ bool CGovernanceManager::GetBestSuperblock(const CDeterministicMNList& tip_mn_li
 }
 
 bool CGovernanceManager::GetSuperblockPayments(const CDeterministicMNList& tip_mn_list, int nBlockHeight,
-                                               std::vector<CTxOut>& voutSuperblockRet)
+                                               std::vector<CTxOut>& voutSuperblockRet, const CBlockIndex& pindex)
 {
     LOCK(cs);
 
     // GET THE BEST SUPERBLOCK FOR THIS BLOCK HEIGHT
 
     CSuperblock_sptr pSuperblock;
-    if (!GetBestSuperblock(tip_mn_list, pSuperblock, nBlockHeight)) {
+    if (!GetBestSuperblock(tip_mn_list, pSuperblock, nBlockHeight, pindex)) {
         LogPrint(BCLog::GOBJECT, "GetSuperblockPayments -- Can't find superblock for height %d\n", nBlockHeight);
         return false;
     }
@@ -1908,19 +1908,19 @@ bool CGovernanceManager::IsValidSuperblock(const CChain& active_chain, const CDe
     LOCK(cs);
 
     CSuperblock_sptr pSuperblock;
-    if (GetBestSuperblock(tip_mn_list, pSuperblock, nBlockHeight)) {
+    if (GetBestSuperblock(tip_mn_list, pSuperblock, nBlockHeight, *active_chain.Tip())) {
         return pSuperblock->IsValid(active_chain, txNew, nBlockHeight, blockReward);
     }
 
     return false;
 }
 
-void CGovernanceManager::ExecuteBestSuperblock(const CDeterministicMNList& tip_mn_list, int nBlockHeight)
+void CGovernanceManager::ExecuteBestSuperblock(const CDeterministicMNList& tip_mn_list, int nBlockHeight, const CBlockIndex& pindex)
 {
     LOCK(cs);
 
     CSuperblock_sptr pSuperblock;
-    if (GetBestSuperblock(tip_mn_list, pSuperblock, nBlockHeight)) {
+    if (GetBestSuperblock(tip_mn_list, pSuperblock, nBlockHeight, pindex)) {
         // All checks are done in CSuperblock::IsValid via IsBlockValueValid and IsBlockPayeeValid,
         // tip wouldn't be updated if anything was wrong. Mark this trigger as executed.
         pSuperblock->SetExecuted();

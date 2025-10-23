@@ -326,7 +326,7 @@ void PrepareShutdown(NodeContext& node)
                 chainstate->ResetCoinsViews();
             }
         }
-        DashChainstateSetupClose(node.chain_helper, node.cpoolman, node.dmnman, node.mnhf_manager, node.llmq_ctx,
+        SparksChainstateSetupClose(node.chain_helper, node.cpoolman, node.dmnman, node.mnhf_manager, node.llmq_ctx,
                                  Assert(node.mempool.get()));
         node.mnhf_manager.reset();
         node.evodb.reset();
@@ -882,7 +882,7 @@ static void PeriodicStats(NodeContext& node)
     }
 }
 
-static bool AppInitServers(const CoreContext& context, NodeContext& node)
+static bool AppInitServers(NodeContext& node)
 {
     const ArgsManager& args = *Assert(node.args);
     RPCServer::OnStarted(&OnRPCStarted);
@@ -1957,6 +1957,7 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
                                                             check_blocks,
                                                             args.GetArg("-checklevel", DEFAULT_CHECKLEVEL),
                                                             /*get_unix_time_seconds=*/static_cast<int64_t(*)()>(GetTime),
+                                                            *Assert(node.sporkman.get()),
                                                             [](bool bls_state) {
                                                                 LogPrintf("%s: bls_legacy_scheme=%d\n", __func__, bls_state);
                                                             });
@@ -2025,14 +2026,14 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     RegisterValidationInterface(node.peerman.get());
 
     g_ds_notification_interface = std::make_unique<CDSNotificationInterface>(
-        *node.connman, *node.mn_sync, *node.govman, *node.peerman, chainman, node.mn_activeman.get(), node.dmnman, node.llmq_ctx, node.cj_ctx
+        *node.connman, *node.mn_sync, *node.govman, *node.peerman, chainman, node.mn_activeman.get(), node.dmnman, node.llmq_ctx, node.cj_ctx, *node.sporkman
     );
     RegisterValidationInterface(g_ds_notification_interface.get());
 
     // ********************************************************* Step 7c: Setup CoinJoin
 
     node.cj_ctx = std::make_unique<CJContext>(chainman, *node.connman, *node.dmnman, *node.mn_metaman, *node.mempool,
-                                              node.mn_activeman.get(), *node.mn_sync, *node.sporkman, *node.llmq_ctx->isman, node.peerman,
+                                              node.mn_activeman.get(), *node.sporkman, *node.mn_sync, *node.llmq_ctx->isman, node.peerman,
                                               !ignores_incoming_txs);
 
 #ifdef ENABLE_WALLET

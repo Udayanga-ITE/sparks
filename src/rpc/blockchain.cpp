@@ -1493,8 +1493,7 @@ RPCHelpMan getblockchaininfo()
                          Consensus::DEPLOYMENT_DIP0024,
                          Consensus::DEPLOYMENT_BRR,
                          Consensus::DEPLOYMENT_V19,
-                         Consensus::DEPLOYMENT_V20,
-                         Consensus::DEPLOYMENT_MN_RR }) {
+                         Consensus::DEPLOYMENT_V20 }) {
         SoftForkDescPushBack(&tip, softforks, consensusParams, deploy);
     }
     for (auto ehf_deploy : { /* sorted by activation block */
@@ -1718,7 +1717,7 @@ static RPCHelpMan invalidateblock()
 
     if (state.IsValid()) {
         const NodeContext& node = EnsureAnyNodeContext(request.context);
-        active_chainstate.ActivateBestChain(state, *node.sporkman);
+        active_chainstate.ActivateBestChain(state, *node.sporkman.get());
     }
 
     if (!state.IsValid()) {
@@ -1764,7 +1763,7 @@ static RPCHelpMan reconsiderblock()
 
     BlockValidationState state;
     const NodeContext& node = EnsureAnyNodeContext(request.context);
-    active_chainstate.ActivateBestChain(state, *node.sporkman);
+    active_chainstate.ActivateBestChain(state, *node.sporkman.get());
 
     if (!state.IsValid()) {
         throw JSONRPCError(RPC_DATABASE_ERROR, state.ToString());

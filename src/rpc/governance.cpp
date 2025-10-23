@@ -1085,17 +1085,17 @@ static const CRPCCommand commands[] =
     { "sparks",               &gobject_deserialize,       },
     { "sparks",               &gobject_check,             },
 #ifdef ENABLE_WALLET
-    { "sparks",               "gobject", "prepare",         &gobject_prepare,         {"parent-hash", "revision", "time", "data-hex", "use-IS", "outputHash", "outputIndex"} },
-    { "sparks",               "gobject", "list-prepared",   &gobject_list_prepared,   {"count"} },
-    { "sparks",               "gobject", "vote-many",       &gobject_vote_many,       {"governance-hash", "vote", "vote-outcome"} },
-    { "sparks",               "gobject", "vote-alias",      &gobject_vote_alias,      {"governance-hash", "vote", "vote-outcome", "protx-hash"} },
+    { "sparks",               &gobject_prepare,           },
+    { "sparks",               &gobject_list_prepared,     },
+    { "sparks",               &gobject_vote_many,         },
+    { "sparks",               &gobject_vote_alias,        },
 #endif
-    { "sparks",               "gobject", "submit",          &gobject_submit,          {"parent-hash", "revision", "time", "data-hex", "fee-txid"} },
-    { "sparks",               "gobject", "list",            &gobject_list,            {"signal", "type"} },
-    { "sparks",               "gobject", "diff",            &gobject_diff,            {"signal", "type"} },
-    { "sparks",               "gobject", "get",             &gobject_get,             {"governance-hash"} },
-    { "sparks",               "gobject", "getcurrentvotes", &gobject_getcurrentvotes, {"governance-hash", "txid", "vout"} },
-    { "sparks",               "voteraw",                    &voteraw,                 {"mn-collateral-tx-hash","mn-collateral-tx-index","governance-hash","vote-signal","vote-outcome","time","vote-sig"} },
+    { "sparks",               &gobject_submit,            },
+    { "sparks",               &gobject_list,              },
+    { "sparks",               &gobject_diff,              },
+    { "sparks",               &gobject_get,               },
+    { "sparks",               &gobject_getcurrentvotes,   },
+    { "sparks",               &voteraw,                   },
 
 };
 // clang-format on

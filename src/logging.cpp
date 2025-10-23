@@ -297,7 +297,7 @@ std::string LogCategoryToStr(BCLog::LogFlags category)
         return "blockstorage";
     case BCLog::LogFlags::TXRECONCILIATION:
         return "txreconciliation";
-    /* Start Dash */
+    /* Start Sparks */
     case BCLog::LogFlags::CHAINLOCKS:
         return "chainlocks";
     case BCLog::LogFlags::GOBJECT:
@@ -324,11 +324,11 @@ std::string LogCategoryToStr(BCLog::LogFlags category)
         return "creditpool";
     case BCLog::LogFlags::EHF:
         return "ehf";
-    case BCLog::LogFlags::DASH:
-        return "dash";
+    case BCLog::LogFlags::SPARKS:
+        return "sparks";
     case BCLog::LogFlags::NET_NETCONN:
         return "net|netconn";
-    /* End Dash */
+    /* End Sparks */
     case BCLog::LogFlags::ALL:
         return "all";
     }

@@ -106,19 +106,19 @@ void SparksChainstateSetup(ChainstateManager& chainman,
                          bool fReindexChainState,
                          const Consensus::Params& consensus_params)
 {
-    DashChainstateSetup(chainman, *Assert(node.govman.get()), *Assert(node.mn_metaman.get()), *Assert(node.mn_sync.get()),
+    SparksChainstateSetup(chainman, *Assert(node.govman.get()), *Assert(node.mn_metaman.get()), *Assert(node.mn_sync.get()),
                         *Assert(node.sporkman.get()), node.mn_activeman, node.chain_helper, node.cpoolman, node.dmnman,
                         node.evodb, node.mnhf_manager, node.llmq_ctx, Assert(node.mempool.get()), fReset, fReindexChainState,
                         consensus_params);
 }
 
-void DashChainstateSetupClose(NodeContext& node)
+void SparksChainstateSetupClose(NodeContext& node)
 {
-    DashChainstateSetupClose(node.chain_helper, node.cpoolman, node.dmnman, node.mnhf_manager, node.llmq_ctx,
+    SparksChainstateSetupClose(node.chain_helper, node.cpoolman, node.dmnman, node.mnhf_manager, node.llmq_ctx,
                              Assert(node.mempool.get()));
 }
 
-void DashPostChainstateSetup(NodeContext& node)
+void SparksPostChainstateSetup(NodeContext& node)
 {
     node.cj_ctx = std::make_unique<CJContext>(*node.chainman, *node.connman, *node.dmnman, *node.mn_metaman, *node.mempool,
                                               /*mn_activeman=*/nullptr, *node.sporkman, *node.mn_sync, *node.llmq_ctx->isman, node.peerman,
@@ -245,8 +245,8 @@ ChainTestingSetup::ChainTestingSetup(const std::string& chainName, const std::ve
     m_node.mn_metaman = std::make_unique<CMasternodeMetaMan>();
     m_node.netfulfilledman = std::make_unique<CNetFulfilledRequestManager>();
     m_node.sporkman = std::make_unique<CSporkManager>();
-    m_node.mn_sync = std::make_unique<CMasternodeSync>(*m_node.connman, *m_node.netfulfilledman, *m_node.sporkman);
-    m_node.govman = std::make_unique<CGovernanceManager>(*m_node.mn_metaman, *m_node.netfulfilledman, *m_node.chainman, m_node.dmnman, *m_node.mn_sync);
+    m_node.mn_sync = std::make_unique<CMasternodeSync>(*m_node.connman, *m_node.netfulfilledman);
+    m_node.govman = std::make_unique<CGovernanceManager>(*m_node.mn_metaman, *m_node.netfulfilledman, *m_node.chainman, m_node.dmnman, *m_node.mn_sync, *m_node.sporkman);
 
     // Start script-checking threads. Set g_parallel_script_checks to true so they are used.
     constexpr int script_check_threads = 2;
@@ -318,6 +318,7 @@ TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const
         m_args.GetArg("-checkblocks", DEFAULT_CHECKBLOCKS),
         m_args.GetArg("-checklevel", DEFAULT_CHECKLEVEL),
         /*get_unix_time_seconds=*/static_cast<int64_t(*)()>(GetTime),
+        *Assert(m_node.sporkman.get()),
         [](bool bls_state) {
             LogPrintf("%s: bls_legacy_scheme=%d\n", __func__, bls_state);
         });
@@ -337,7 +338,7 @@ TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const
     SparksPostChainstateSetup(m_node);
 
     BlockValidationState state;
-    if (!m_node.chainman->ActiveChainstate().ActivateBestChain(state, *m_node.sporkman)) {
+    if (!m_node.chainman->ActiveChainstate().ActivateBestChain(state, *m_node.sporkman.get())) {
         throw std::runtime_error(strprintf("ActivateBestChain failed. (%s)", state.ToString()));
     }
 }
@@ -562,7 +563,7 @@ CMutableTransaction TestChainSetup::CreateValidMempoolTransaction(CTransactionRe
     // If submit=true, add transaction to the mempool.
     if (submit) {
         LOCK(cs_main);
-        const MempoolAcceptResult result = m_node.chainman->ProcessTransaction(MakeTransactionRef(mempool_txn));
+        const MempoolAcceptResult result = m_node.chainman->ProcessTransaction(MakeTransactionRef(mempool_txn), *m_node.sporkman.get());
         assert(result.m_result_type == MempoolAcceptResult::ResultType::VALID);
     }
 

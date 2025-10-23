@@ -41,7 +41,7 @@ LLMQContext::LLMQContext(ChainstateManager& chainman, CDeterministicMNManager& d
                                                          sporkman, mempool, mn_sync, is_masternode)},
     isman{std::make_unique<llmq::CInstantSendManager>(*clhandler, chainman.ActiveChainstate(), *qman, *sigman, *shareman,
                                                       sporkman, mempool, mn_sync, is_masternode, unit_tests, wipe)},
-    ehfSignalsHandler{std::make_unique<llmq::CEHFSignalsHandler>(chainman, mnhfman, *sigman, *shareman, *qman)}
+    ehfSignalsHandler{std::make_unique<llmq::CEHFSignalsHandler>(chainman, mnhfman, *sigman, *shareman, *qman, sporkman)}
 {
     // Have to start it early to let VerifyDB check ChainLock signatures in coinbase
     bls_worker->Start();

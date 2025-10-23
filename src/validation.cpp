@@ -356,7 +356,7 @@ void CChainState::MaybeUpdateMempoolForReorg(
     while (it != disconnectpool.queuedTx.get<insertion_order>().rend()) {
         // ignore validation errors in resurrected transactions
         if (!fAddToMempool || (*it)->IsCoinBase() ||
-            AcceptToMemoryPool(*this, *it, m_spork_manager, GetTime(),
+            AcceptToMemoryPool(*this, *it, GetTime(), m_spork_manager,
                 /*bypass_limits=*/true, /*test_accept=*/false).m_result_type !=
                     MempoolAcceptResult::ResultType::VALID) {
             // If the transaction doesn't make it in to the mempool, remove any
@@ -1510,6 +1510,7 @@ CAmount GetMasternodePayment(int nHeight, CAmount blockValue, bool fV20Active)
 {
     const Consensus::Params& consensusParams = Params().GetConsensus();
     const int nReallocActivationHeight = Params().GetConsensus().BRRHeight;
+    bool fDIP0001ActiveAtTip = nHeight >= Params().GetConsensus().DIP0001Height;
 
     if(!fDIP0001ActiveAtTip)
     {
@@ -4407,7 +4408,7 @@ bool ChainstateManager::ProcessNewBlock(const CChainParams& chainparams, const s
     return true;
 }
 
-MempoolAcceptResult ChainstateManager::ProcessTransaction(const CTransactionRef& tx, bool test_accept, bool bypass_limits)
+MempoolAcceptResult ChainstateManager::ProcessTransaction(const CTransactionRef& tx, const CSporkManager& spork_manager, bool test_accept, bool bypass_limits)
 {
     CChainState& active_chainstate = ActiveChainstate();
     if (!active_chainstate.GetMempool()) {
@@ -4415,7 +4416,7 @@ MempoolAcceptResult ChainstateManager::ProcessTransaction(const CTransactionRef&
         state.Invalid(TxValidationResult::TX_NO_MEMPOOL, "no-mempool");
         return MempoolAcceptResult::Failure(state);
     }
-    auto result = AcceptToMemoryPool(active_chainstate, tx, GetTime(), bypass_limits, test_accept);
+    auto result = AcceptToMemoryPool(active_chainstate, tx, GetTime(), spork_manager, bypass_limits, test_accept);
     active_chainstate.GetMempool()->check(active_chainstate.CoinsTip(), active_chainstate.m_chain.Height() + 1);
     return result;
 }
@@ -4537,7 +4538,8 @@ bool CVerifyDB::VerifyDB(
     const Consensus::Params& consensus_params,
     CCoinsView& coinsview,
     CEvoDB& evoDb,
-    int nCheckLevel, int nCheckDepth,
+    int nCheckLevel, 
+    int nCheckDepth,
     CSporkManager& spork_manager)
 {
     AssertLockHeld(cs_main);

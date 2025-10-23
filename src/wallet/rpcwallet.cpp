@@ -4455,105 +4455,115 @@ static RPCHelpMan sethdseed()
     };
 }
 
-UniValue setautocombinethreshold(const JSONRPCRequest& request)
+static RPCHelpMan setautocombinethreshold()
 {
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    if (!wallet) return NullUniValue;
-    CWallet* const pwallet = wallet.get();
+    return RPCHelpMan{
+        "setautocombinethreshold",
+        "\nSets the auto-combine threshold value.\n"
+        "Wallet will automatically monitor coins below the threshold and combine them "
+        "if they reside with the same Sparks address.\n"
+        "When auto-combine runs, it creates a transaction (and thus pays fees).\n",
+        {
+            {"enable", RPCArg::Type::BOOL, RPCArg::Optional::NO, "Enable or disable auto-combine"},
+            {"threshold", RPCArg::Type::AMOUNT, RPCArg::Optional::OMITTED, "Threshold amount (required if enabled)"},
+            {"safemargin", RPCArg::Type::NUM, RPCArg::Default{0.0001}, "Safety margin percentage to avoid insufficient funds"},
+        },
+        RPCResult{
+            RPCResult::Type::OBJ, "", "",
+            {
+                {RPCResult::Type::BOOL, "enabled", "True if auto-combine is enabled"},
+                {RPCResult::Type::NUM, "threshold", "Auto-combine threshold in Sparks"},
+                {RPCResult::Type::NUM, "safemargin", "Safety margin percentage"},
+                {RPCResult::Type::BOOL, "saved", "True if the setting was saved to the database"},
+            }
+        },
+        RPCExamples{
+            HelpExampleCli("setautocombinethreshold", "true 500.12 0.0001") +
+            HelpExampleRpc("setautocombinethreshold", "true, 500.12, 0.0001")
+        },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+            if (!wallet) return NullUniValue;
+            CWallet* const pwallet = wallet.get();
 
-    if (request.fHelp || request.params.empty() || request.params.size() > 3)
-        throw std::runtime_error(
-            "setautocombinethreshold enable ( value ) ( value )\n"
-            "\nThis will set the auto-combine threshold value.\n"
-            "\nWallet will automatically monitor for any coins with value below the threshold amount, and combine them if they reside with the same Sparks address\n"
-            "When auto-combine runs it will create a transaction, and therefore will be subject to transaction fees.\n"
+            bool fEnable = ParseBoolV(request.params[0], "enable");
+            CAmount nThreshold = 0;
+            CAmount nSafemargin = 0;
 
-            "\nArguments:\n"
-            "1. enable          (boolean, required) Enable auto combine (true) or disable (false).\n"
-            "2. threshold       (numeric, optional. required if enable is true) Threshold amount. Must be greater than 1.\n"
-            "3. safemargin      (numeric, optional. if enable is true, margin will set to default 0.0001%) safety margin percentage to avoid \"Insufficient funds\". Must be greater than or equal 0.0001.\n"
+            if (fEnable) {
+                if (request.params.size() < 2) {
+                    throw JSONRPCError(RPC_INVALID_PARAMETER, "Missing threshold value");
+                }
 
-            "\nResult:\n"
-            "{\n"
-            "  \"enabled\": true|false,      (boolean) true if auto-combine is enabled, otherwise false\n"
-            "  \"threshold\": n.nnn,         (numeric) auto-combine threshold in PIV\n"
-            "  \"safemargin\": n.nnn,        (numeric) auto-combine safety margin percentage to avoid \"Insufficient funds\"\n"
-            "  \"saved\": true|false         (boolean) true if setting was saved to the database, otherwise false\n"
-            "}\n"
+                nThreshold = AmountFromValue(request.params[1]);
+                nSafemargin = AmountFromValue(0.0001);
 
-            "\nExamples:\n" +
-            HelpExampleCli("setautocombinethreshold", "true 500.12 0.0001") + HelpExampleRpc("setautocombinethreshold", "true, 500.12, 0.0001"));
+                if (request.params.size() == 3) {
+                    nSafemargin = AmountFromValue(request.params[2]);
+                    if (nSafemargin < AmountFromValue(0.0001)) {
+                        throw JSONRPCError(RPC_INVALID_PARAMETER,
+                            strprintf("The margin value cannot be less than %s", 0.0001));
+                    }
+                }
 
-    bool fEnable = ParseBoolV(request.params[0], "enable");
-    CAmount nThreshold = 0;
-    CAmount nSafemargin = 0;
-    if (fEnable) {
-        if (request.params.size() < 2) {
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "Missing threshold value");
+                if (nThreshold <= COIN) {
+                    throw JSONRPCError(RPC_INVALID_PARAMETER,
+                        strprintf("The threshold value cannot be less than %s", FormatMoney(COIN)));
+                }
+            }
+
+            WalletBatch batch(pwallet->GetDatabase());
+            LOCK(pwallet->cs_wallet);
+
+            pwallet->fCombineDust = fEnable;
+            pwallet->nAutoCombineThreshold = nThreshold;
+            pwallet->nAutoCombineSafemargin = nSafemargin;
+
+            UniValue result(UniValue::VOBJ);
+            result.pushKV("enabled", fEnable);
+            result.pushKV("threshold", ValueFromAmount(pwallet->nAutoCombineThreshold));
+            result.pushKV("safemargin", ValueFromAmount(pwallet->nAutoCombineSafemargin));
+
+            result.pushKV("saved", batch.WriteAutoCombineSettings(fEnable, nThreshold, nSafemargin));
+
+            return result;
         }
-        nThreshold = AmountFromValue(ParseDoubleV(request.params[1], "threshold"));
-        nSafemargin = AmountFromValue(0.0001);
-        if (request.params.size() == 3) {
-            nSafemargin = AmountFromValue(request.params[2]);
-            if (nSafemargin < AmountFromValue(0.0001))
-                throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("The margin value cannot be less than %s", 0.0001));
-        }
-        if (nThreshold <= COIN)
-            throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("The threshold value cannot be less than %s", FormatMoney(COIN)));
-    }
-
-    WalletBatch batch(pwallet->GetDatabase());
-
-    {
-        LOCK(pwallet->cs_wallet);
-        pwallet->fCombineDust = fEnable;
-        pwallet->nAutoCombineThreshold = nThreshold;
-        pwallet->nAutoCombineSafemargin = nSafemargin;
-
-        UniValue result(UniValue::VOBJ);
-        result.pushKV("enabled", fEnable);
-        result.pushKV("threshold", ValueFromAmount(pwallet->nAutoCombineThreshold));
-        result.pushKV("safemargin", ValueFromAmount(pwallet->nAutoCombineSafemargin));
-
-        if (batch.WriteAutoCombineSettings(fEnable, nThreshold, nSafemargin)) {
-            result.pushKV("saved", "true");
-        } else {
-            result.pushKV("saved", "false");
-        }
-
-        return result;
-    }
+    };
 }
 
-UniValue getautocombinethreshold(const JSONRPCRequest& request)
+static RPCHelpMan getautocombinethreshold()
 {
-    std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
-    if (!wallet) return NullUniValue;
-    CWallet* const pwallet = wallet.get();
+    return RPCHelpMan{
+        "getautocombinethreshold",
+        "\nReturns the current auto-combine threshold settings.\n",
+        {},
+        RPCResult{
+            RPCResult::Type::OBJ, "", "",
+            {
+                {RPCResult::Type::BOOL, "enabled", "True if auto-combine is enabled"},
+                {RPCResult::Type::NUM, "threshold", "Auto-combine threshold in Sparks"},
+                {RPCResult::Type::NUM, "safemargin", "Safety margin percentage"},
+            }
+        },
+        RPCExamples{
+            HelpExampleCli("getautocombinethreshold", "") +
+            HelpExampleRpc("getautocombinethreshold", "")
+        },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            std::shared_ptr<CWallet> const wallet = GetWalletForJSONRPCRequest(request);
+            if (!wallet) return NullUniValue;
+            CWallet* const pwallet = wallet.get();
 
-    if (request.fHelp || !request.params.empty())
-        throw std::runtime_error(
-            "getautocombinethreshold\n"
-            "\nReturns the current threshold for auto combining UTXOs, if any\n"
+            LOCK(pwallet->cs_wallet);
 
-            "\nResult:\n"
-            "{\n"
-            "  \"enabled\": true|false,        (boolean) true if auto-combine is enabled, otherwise false\n"
-            "  \"threshold\": n.nnn            (numeric) the auto-combine threshold amount in PIV\n"
-            "  \"safemargin\": n.nnn,          (numeric) auto-combine safety margin percentage to avoid \"Insufficient funds\"\n"
-            "}\n"
+            UniValue result(UniValue::VOBJ);
+            result.pushKV("enabled", pwallet->fCombineDust);
+            result.pushKV("threshold", ValueFromAmount(pwallet->nAutoCombineThreshold));
+            result.pushKV("safemargin", ValueFromAmount(pwallet->nAutoCombineSafemargin));
 
-            "\nExamples:\n" +
-            HelpExampleCli("getautocombinethreshold", "") + HelpExampleRpc("getautocombinethreshold", ""));
-
-    LOCK(pwallet->cs_wallet);
-
-    UniValue result(UniValue::VOBJ);
-    result.pushKV("enabled", pwallet->fCombineDust);
-    result.pushKV("threshold", ValueFromAmount(pwallet->nAutoCombineThreshold));
-    result.pushKV("safemargin", ValueFromAmount(pwallet->nAutoCombineSafemargin));
-
-    return result;
+            return result;
+        }
+    };
 }
 
 RPCHelpMan walletprocesspsbt()

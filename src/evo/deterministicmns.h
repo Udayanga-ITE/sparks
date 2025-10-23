@@ -243,7 +243,8 @@ public:
     {
         return ranges::count_if(mnMap, [](const auto& p) { return IsMNValid(*p.second); });
     }
-    size_t GetIPv4Count() const
+    
+    [[nodiscard]] size_t GetIPv4Count() const
     {
         size_t count = 0;
         for (const auto& p : mnMap) {
@@ -254,28 +255,7 @@ public:
         return count;
     }
 
-    size_t GetIPv6Count() const
-    {
-        size_t count = 0;
-        for (const auto& p : mnMap) {
-            if (IsMNValid(*p.second) && p.second->pdmnState->addr.IsIPv6()) {
-                count++;
-            }
-        }
-        return count;
-    }
-    size_t GetIPv4Count() const
-    {
-        size_t count = 0;
-        for (const auto& p : mnMap) {
-            if (IsMNValid(*p.second) && p.second->pdmnState->addr.IsIPv4()) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    size_t GetIPv6Count() const
+    [[nodiscard]] size_t GetIPv6Count() const
     {
         size_t count = 0;
         for (const auto& p : mnMap) {
@@ -299,7 +279,7 @@ public:
 
     [[nodiscard]] size_t GetValidWeightedMNsCount(const CChain& chain) const
     {
-        return std::accumulate(mnMap.begin(), mnMap.end(), 0, [, &chain](auto res, const auto& p) {
+        return std::accumulate(mnMap.begin(), mnMap.end(), 0, [&chain](auto res, const auto& p) {
                                                                 const CBlockIndex* pindex = chain.Tip();
             if (!IsMNValid(*p.second)) return res;
             return res + GetMnType(p.second->nType, pindex).voting_weight;

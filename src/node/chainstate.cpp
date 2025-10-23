@@ -61,7 +61,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
     mnhf_manager.reset();
     mnhf_manager = std::make_unique<CMNHFManager>(*evodb);
 
-    chainman.InitializeChainstate(mempool, *evodb, chain_helper);
+    chainman.InitializeChainstate(mempool, *evodb, chain_helper, sporkman);
     chainman.m_total_coinstip_cache = nCoinCacheUsage;
     chainman.m_total_coinsdb_cache = nCoinDBCache;
 
@@ -71,7 +71,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
     pblocktree.reset();
     pblocktree.reset(new CBlockTreeDB(nBlockTreeDBCache, block_tree_db_in_memory, fReset));
 
-    DashChainstateSetup(chainman, govman, mn_metaman, mn_sync, sporkman, mn_activeman, chain_helper, cpoolman,
+    SparksChainstateSetup(chainman, govman, mn_metaman, mn_sync, sporkman, mn_activeman, chain_helper, cpoolman,
                         dmnman, evodb, mnhf_manager, llmq_ctx, mempool, fReset, fReindexChainState,
                         consensus_params);
 
@@ -197,7 +197,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
     return std::nullopt;
 }
 
-void DashChainstateSetup(ChainstateManager& chainman,
+void SparksChainstateSetup(ChainstateManager& chainman,
                          CGovernanceManager& govman,
                          CMasternodeMetaMan& mn_metaman,
                          CMasternodeSync& mn_sync,
@@ -238,7 +238,7 @@ void DashChainstateSetup(ChainstateManager& chainman,
                                                        *(llmq_ctx->qman));
 }
 
-void DashChainstateSetupClose(std::unique_ptr<CChainstateHelper>& chain_helper,
+void SparksChainstateSetupClose(std::unique_ptr<CChainstateHelper>& chain_helper,
                               std::unique_ptr<CCreditPoolManager>& cpoolman,
                               std::unique_ptr<CDeterministicMNManager>& dmnman,
                               std::unique_ptr<CMNHFManager>& mnhf_manager,
@@ -264,6 +264,7 @@ std::optional<ChainstateLoadVerifyError> VerifyLoadedChainstate(ChainstateManage
                                                                 int check_blocks,
                                                                 int check_level,
                                                                 std::function<int64_t()> get_unix_time_seconds,
+                                                                CSporkManager& sporkman,
                                                                 std::function<void(bool)> notify_bls_state)
 {
     auto is_coinsview_empty = [&](CChainState* chainstate) EXCLUSIVE_LOCKS_REQUIRED(::cs_main) {
@@ -288,7 +289,8 @@ std::optional<ChainstateLoadVerifyError> VerifyLoadedChainstate(ChainstateManage
                     *chainstate, consensus_params, chainstate->CoinsDB(),
                     evodb,
                     check_level,
-                    check_blocks)) {
+                    check_blocks,
+                    sporkman)) {
                 return ChainstateLoadVerifyError::ERROR_CORRUPTED_BLOCK_DB;
             }
 

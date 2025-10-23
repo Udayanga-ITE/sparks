@@ -6,6 +6,7 @@
 #define BITCOIN_LLMQ_EHF_SIGNALS_H
 
 #include <llmq/signing.h>
+#include <spork.h>
 
 #include <set>
 
@@ -27,6 +28,7 @@ private:
     CSigningManager& sigman;
     CSigSharesManager& shareman;
     const CQuorumManager& qman;
+    const CSporkManager& sporkman;
 
     /**
      * keep freshly generated IDs for easier filter sigs in HandleNewRecoveredSig
@@ -35,7 +37,8 @@ private:
     std::set<uint256> ids GUARDED_BY(cs);
 public:
     explicit CEHFSignalsHandler(ChainstateManager& chainman, CMNHFManager& mnhfman, CSigningManager& sigman,
-                                CSigSharesManager& shareman, const CQuorumManager& qman);
+                                CSigSharesManager& shareman, const CQuorumManager& qman,
+                                const CSporkManager& sporkman);
 
     ~CEHFSignalsHandler();
 

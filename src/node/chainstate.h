@@ -107,7 +107,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
                                                      std::function<void()> coins_error_cb = nullptr);
 
 /** Initialize Dash-specific components during chainstate initialization */
-void DashChainstateSetup(ChainstateManager& chainman,
+void SparksChainstateSetup(ChainstateManager& chainman,
                          CGovernanceManager& govman,
                          CMasternodeMetaMan& mn_metaman,
                          CMasternodeSync& mn_sync,
@@ -124,7 +124,7 @@ void DashChainstateSetup(ChainstateManager& chainman,
                          bool fReindexChainState,
                          const Consensus::Params& consensus_params);
 
-void DashChainstateSetupClose(std::unique_ptr<CChainstateHelper>& chain_helper,
+void SparksChainstateSetupClose(std::unique_ptr<CChainstateHelper>& chain_helper,
                               std::unique_ptr<CCreditPoolManager>& cpoolman,
                               std::unique_ptr<CDeterministicMNManager>& dmnman,
                               std::unique_ptr<CMNHFManager>& mnhf_manager,
@@ -146,6 +146,7 @@ std::optional<ChainstateLoadVerifyError> VerifyLoadedChainstate(ChainstateManage
                                                                 int check_blocks,
                                                                 int check_level,
                                                                 std::function<int64_t()> get_unix_time_seconds,
+                                                                CSporkManager& sporkman,
                                                                 std::function<void(bool)> notify_bls_state = nullptr);
 
 #endif // BITCOIN_NODE_CHAINSTATE_H

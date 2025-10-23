@@ -88,7 +88,6 @@ std::vector<unsigned char> ParseHexO(const UniValue& o, std::string strKey);
 
 int32_t ParseInt32V(const UniValue& v, const std::string &strName);
 int64_t ParseInt64V(const UniValue& v, const std::string &strName);
-double ParseDoubleV(const UniValue& v, const std::string &strName);
 bool ParseBoolV(const UniValue& v, const std::string &strName);
 
 /**

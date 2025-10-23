@@ -3215,7 +3215,7 @@ void PeerManagerImpl::ProcessOrphanTx(std::set<uint256>& orphan_work_set)
         const auto [porphanTx, from_peer] = m_orphanage.GetTx(orphanHash);
         if (porphanTx == nullptr) continue;
 
-        const MempoolAcceptResult result = m_chainman.ProcessTransaction(porphanTx);
+        const MempoolAcceptResult result = m_chainman.ProcessTransaction(porphanTx, m_sporkman);
         const TxValidationState& state = result.m_state;
 
         if (result.m_result_type == MempoolAcceptResult::ResultType::VALID) {
@@ -4481,7 +4481,7 @@ void PeerManagerImpl::ProcessMessage(
             return;
         }
 
-        const MempoolAcceptResult result = m_chainman.ProcessTransaction(ptx);
+        const MempoolAcceptResult result = m_chainman.ProcessTransaction(ptx, m_sporkman);
         const TxValidationState& state = result.m_state;
 
         if (result.m_result_type == MempoolAcceptResult::ResultType::VALID) {

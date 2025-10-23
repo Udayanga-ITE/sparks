@@ -312,7 +312,7 @@ bool ATMPIfSaneFee(ChainstateManager& chainman, const CTransactionRef& tx, CSpor
         /* Don't re-run ATMP if only doing test run */
         return true;
     }
-    return chainman.ProcessTransaction(tx, test_accept).m_result_type == MempoolAcceptResult::ResultType::VALID;
+    return chainman.ProcessTransaction(tx, spork_manager, test_accept).m_result_type == MempoolAcceptResult::ResultType::VALID;
 }
 
 // check to make sure the collateral provided by the client is valid

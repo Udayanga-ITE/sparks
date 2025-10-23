@@ -452,6 +452,7 @@ static constexpr std::array<LLMQParams, 18> available_llmqs = {
     LLMQParams{
         .type = LLMQType::LLMQ_15_60,
         .name = "llmq_15_60",
+        .useRotation = false,
         .size = 15,
         .minSize = 12,
         .threshold = 9,
@@ -472,6 +473,7 @@ static constexpr std::array<LLMQParams, 18> available_llmqs = {
     LLMQParams{
         .type = LLMQType::LLMQ_25_60,
         .name = "llmq_25_60",
+        .useRotation = false,
         .size = 25,
         .minSize = 20,
         .threshold = 15,
@@ -493,6 +495,7 @@ static constexpr std::array<LLMQParams, 18> available_llmqs = {
     LLMQParams{
         .type = LLMQType::LLMQ_25_80,
         .name = "llmq_25_80",
+        .useRotation = false,
         .size = 25,
         .minSize = 23,
         .threshold = 20,

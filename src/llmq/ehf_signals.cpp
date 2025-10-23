@@ -21,12 +21,14 @@ namespace llmq {
 
 
 CEHFSignalsHandler::CEHFSignalsHandler(ChainstateManager& chainman, CMNHFManager& mnhfman, CSigningManager& sigman,
-                                       CSigSharesManager& shareman, const CQuorumManager& qman) :
+                                       CSigSharesManager& shareman, const CQuorumManager& qman,
+                                       const CSporkManager& sporkman) :
     m_chainman(chainman),
     mnhfman(mnhfman),
     sigman(sigman),
     shareman(shareman),
-    qman(qman)
+    qman(qman),
+    sporkman(sporkman)
 {
     sigman.RegisterRecoveredSigsListener(this);
 }
@@ -124,7 +126,7 @@ MessageProcessingResult CEHFSignalsHandler::HandleNewRecoveredSig(const CRecover
             CTransactionRef tx_to_sent = MakeTransactionRef(std::move(tx));
             LogPrintf("CEHFSignalsHandler::HandleNewRecoveredSig Special EHF TX is created hash=%s\n", tx_to_sent->GetHash().ToString());
             LOCK(cs_main);
-            const MempoolAcceptResult result = m_chainman.ProcessTransaction(tx_to_sent);
+            const MempoolAcceptResult result = m_chainman.ProcessTransaction(tx_to_sent, sporkman);
             if (result.m_result_type == MempoolAcceptResult::ResultType::VALID) {
                 ret.m_transactions.push_back(tx_to_sent->GetHash());
             } else {

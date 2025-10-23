@@ -22,7 +22,7 @@ CJContext::CJContext(ChainstateManager& chainman, CConnman& connman, CDeterminis
                         : nullptr},
 #endif // ENABLE_WALLET
     server{std::make_unique<CCoinJoinServer>(chainman, connman, dmnman, *dstxman, mn_metaman, mempool, mn_activeman,
-                                             spork_manager, mn_sync, isman, peerman)}
+                                            mn_sync, spork_manager, isman, peerman)}
 {}
 
 CJContext::~CJContext() {}

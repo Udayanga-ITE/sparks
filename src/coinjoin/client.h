@@ -317,7 +317,8 @@ public:
         m_walletman(walletman),
         m_dmnman(dmnman),
         m_mn_metaman(mn_metaman),
-        m_spork_manager(spork_manager), m_mn_sync(mn_sync),
+        m_mn_sync(mn_sync),
+        m_spork_manager(spork_manager),
         m_isman{isman},
         m_queueman(queueman),
         m_is_masternode{is_masternode}

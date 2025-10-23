@@ -758,13 +758,13 @@ static const CRPCCommand commands[] =
     { "sparks",               &masternode_connect,       },
     { "sparks",               &masternode_count,         },
 #ifdef ENABLE_WALLET
-    { "sparks",               "masternode", "outputs",  &masternode_outputs,       {} },
+    { "sparks",               &masternode_outputs,       },
 #endif // ENABLE_WALLET
-    { "sparks",               "masternode", "status",   &masternode_status,        {} },
-    { "sparks",               "masternode", "payments", &masternode_payments,      {"blockhash", "count"} },
-    { "sparks",               "masternode", "winners",  &masternode_winners,       {"count", "filter"} },
-    { "sparks",               "masternode", "current",  &masternode_current,       {} },
-    { "sparks",               "masternode", "winner",   &masternode_winner,        {} },
+    { "sparks",               &masternode_status,        },
+    { "sparks",               &masternode_payments,      },
+    { "sparks",               &masternode_winners,       },
+    { "hidden",               &masternode_current,       },
+    { "hidden",               &masternode_winner,        },
 };
 // clang-format on
     for (const auto& command : commands) {

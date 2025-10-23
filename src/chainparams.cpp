@@ -194,7 +194,6 @@ public:
         consensus.DIP0024Height = 1386100; // 0000000633967f4b173e84427426c898a3817ebc177de2b7c22ba0fa2b09b1c8
         consensus.V19Height = 1547800; // 0000003db5bd9c33d765d714fbc7ac207d3a65d00b5081e676c61c3139050348
         consensus.V20Height = 1623900; // 000000006e4702d0d0cba4937f08d98db27725b6453d45cf7899f5cee9cd0a8a
-        consensus.MN_RRHeight = 0; // Never Active
         consensus.MinBIP9WarningHeight = 1623900 + 2016; // V20 activation height + miner confirmation window
         consensus.nPowTargetTimespan = 60 * 60; // Sparks: 1 hour, 24 blocks
         consensus.nPowTargetSpacing = 2 * 60; // Sparks: 120 seconds
@@ -208,6 +207,13 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0; // No activation delay
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].bit = 13;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nStartTime = -2; //Never activate
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nTimeout = 0;
+        // NOTE: nWindowSize for MN_RR __MUST__ be greater than or equal to nSuperblockMaturityWindow for CSuperblock::GetPaymentsLimit() to work correctly
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nWindowSize = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nThresholdStart = 0;     // 60% of 100
 
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].bit = 14;
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].nStartTime = 1776470400;   // Saturday April 18, 2026
@@ -410,7 +416,6 @@ public:
         consensus.DIP0024Height = 2430; // 0000030485d7c29b8315cae01793d5ef5c314f7db633dca3fa7e94791c910fe8
         consensus.V19Height = 12560; // 00000ff3c6008732e8d62f38276c4ebfab0b096972385c6e5c5b213752cd333c
         consensus.V20Height = 39390; // 00000030127a9859a650b52b7a0ac3b06deeda235f7c8ffee1643edf5ce67c97
-        consensus.MN_RRHeight = 0; // Never active
         consensus.MinBIP9WarningHeight = 39390 + 2016;  // v20 activation height + miner confirmation window
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 20
         consensus.nPowTargetTimespan = 5 * 60; // Sparks: 5 minutes, 50 blocks
@@ -425,6 +430,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0; // No activation delay
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].bit = 13;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nStartTime = -2; //Never activate
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nTimeout = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nWindowSize = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nThresholdStart = 0;       // 80% of 10
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nThresholdMin = 0;         // 60% of 10
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nFalloffCoeff = 0;          // this corresponds to 10 periods
 
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].bit = 14;
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].nStartTime = 1763164800;   // Sat Nov 15 2025 00:00:00
@@ -587,7 +600,6 @@ public:
         consensus.DIP0024QuorumsHeight = 300; // DIP0024 activated immediately on devnet
         consensus.V19Height = 300;     // V19 activated immediately on devnet
         consensus.V20Height = 300;     // V20 activated immediately on devnet
-        consensus.MN_RRHeight = 0;   // MN_RR activated immediately on devnet => Never active
         consensus.MinBIP9WarningHeight = 300 + 2016; // v20 activation height + miner confirmation window
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 1
         consensus.nPowTargetTimespan = 24 * 60 * 60; // Sparks: 1 day
@@ -602,6 +614,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0; // No activation delay
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].bit = 10;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nStartTime = 0; //Never activate
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nTimeout = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nWindowSize = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nThresholdStart = 0; // 80% of 100
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nThresholdMin = 0;   // 60% of 100
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nFalloffCoeff = 0;     // this corresponds to 10 periods
 
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].bit = 11;
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].nStartTime = 1704067200;   // January 1, 2024
@@ -828,7 +848,6 @@ public:
         consensus.DIP0024QuorumsHeight = 900;
         consensus.V19Height = 900;
         consensus.V20Height = 900;
-        consensus.MN_RRHeight = 0;  // Never active
         consensus.MinBIP9WarningHeight = 0;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
@@ -841,6 +860,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].min_activation_height = 0; // No activation delay
+
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].bit = 10;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nStartTime = 0; //Never activate
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nTimeout = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nWindowSize = 0;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nThresholdStart = 0; // 80% of 12
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nThresholdMin = 0;   // 60% of 7
+        consensus.vDeployments[Consensus::DEPLOYMENT_MN_RR].nFalloffCoeff = 0;     // this corresponds to 10 periods
 
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].bit = 11;
         consensus.vDeployments[Consensus::DEPLOYMENT_WITHDRAWALS].nStartTime = 0;
@@ -1065,8 +1092,6 @@ static void MaybeUpdateHeights(const ArgsManager& args, Consensus::Params& conse
             consensus.V19Height = int{height};
         } else if (name == "v20") {
             consensus.V20Height = int{height};
-        } else if (name == "mn_rr") {
-            consensus.MN_RRHeight = int{height};
         } else {
             throw std::runtime_error(strprintf("Invalid name (%s) for -testactivationheight=name@height.", arg));
         }

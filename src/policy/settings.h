@@ -19,6 +19,8 @@ extern CFeeRate incrementalRelayFee;
 extern CFeeRate dustRelayFee;
 /** A fee rate smaller than this is considered zero fee (for relaying, mining and transaction creation) */
 extern CFeeRate minRelayTxFee;
+/** A fee rate smaller than this is considered zero fee for data transactions */
+extern CFeeRate minRelayDataTxFee;
 extern unsigned int nBytesPerSigOp;
 extern bool fIsBareMultisigStd;
 

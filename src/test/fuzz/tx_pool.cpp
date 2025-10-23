@@ -96,7 +96,7 @@ void Finish(FuzzedDataProvider& fuzzed_data_provider, MockedTxPool& tx_pool, con
         options.blockMinFeeRate = CFeeRate{ConsumeMoney(fuzzed_data_provider, /* max */ COIN)};
 
         auto assembler = BlockAssembler{chainstate, node, *static_cast<CTxMemPool*>(&tx_pool), chainstate.m_params, options};
-        auto block_template = assembler.CreateNewBlock(CScript{} << OP_TRUE);
+        auto block_template = assembler.CreateNewBlock(CScript{} << OP_TRUE, *node.sporkman);
         Assert(block_template->block.vtx.size() >= 1);
     }
     const auto info_all = tx_pool.infoAll();
@@ -341,7 +341,7 @@ FUZZ_TARGET_INIT(tx_pool, initialize_tx_pool)
         const auto tx = MakeTransactionRef(mut_tx);
         const bool bypass_limits = fuzzed_data_provider.ConsumeBool();
         ::fRequireStandard = fuzzed_data_provider.ConsumeBool();
-        const auto res = WITH_LOCK(::cs_main, return AcceptToMemoryPool(chainstate, tx, *node.sporkman, GetTime(), bypass_limits, /*test_accept=*/false));
+        const auto res = WITH_LOCK(::cs_main, return AcceptToMemoryPool(chainstate, tx, GetTime(), *node.sporkman, bypass_limits, /*test_accept=*/false));
         const bool accepted = res.m_result_type == MempoolAcceptResult::ResultType::VALID;
         if (accepted) {
             txids.push_back(tx->GetHash());

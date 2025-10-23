@@ -356,9 +356,7 @@ void OpenWalletActivity::open(const std::string& path)
             m_wallet_model = m_wallet_controller->getOrCreateWallet(std::move(wallet));
 
             std::set<COutPoint> setOutpts;
-            std::vector<COutPoint> vOutpts;
-            m_wallet_model->wallet().listProTxCoins(vOutpts);
-            for (const auto& outpt : vOutpts) {
+            for (const auto& outpt : m_wallet_model->wallet().listProTxCoins()) {
                 setOutpts.emplace(outpt);
             }
 
@@ -374,7 +372,7 @@ void OpenWalletActivity::open(const std::string& path)
                 m_wallet_model->wallet().isSpendable(dmn.pdmnState->scriptOperatorPayout);
 
                 if (fMyMasternode) {
-                    m_wallet_model->wallet().lockCoin(dmn.collateralOutpoint);
+                    m_wallet_model->wallet().lockCoin(dmn.collateralOutpoint, /*write_to_db=*/true);
                 }
             });
         }
