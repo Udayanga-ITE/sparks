@@ -21,7 +21,7 @@
 #include <uint256.h>
 
 
-/* ----------- Dash Hash ------------------------------------------------ */
+/* ----------- Sparks Hash ------------------------------------------------ */
 template <typename T1>
 inline uint256 HashX11(const T1 pbegin, const T1 pend)
 

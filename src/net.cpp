@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2020 The Bitcoin Core developers
 // Copyright (c) 2014-2025 The Dash Core developers
+// Copyright (c) 2016-2025 The Sparks Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1025,7 +1026,7 @@ const std::array<std::string, 33> V2_BITCOIN_IDS = {
     NetMsgType::BLOCK,
     NetMsgType::BLOCKTXN,
     NetMsgType::CMPCTBLOCK,
-    "", /* FEEFILTER is not implemented in Dash */
+    "", /* FEEFILTER is not implemented in Sparks */
     NetMsgType::FILTERADD,
     NetMsgType::FILTERCLEAR,
     NetMsgType::FILTERLOAD,
@@ -1056,7 +1057,7 @@ const std::array<std::string, 33> V2_BITCOIN_IDS = {
     ""
 };
 
-/** List of short messages allocated in Dash's reserved namespace, in order.
+/** List of short messages allocated in Sparks's reserved namespace, in order.
  *
  * Slots should not be reused unless the switchover has already been done
  * by a protocol upgrade, the old message is no longer supported by the client
@@ -1107,7 +1108,7 @@ const std::array<std::string, 40> V2_DASH_IDS = {
 
 /** A complete set of short IDs
  *
- * Bitcoin takes up short IDs upto 128 (lower half) while Dash can take
+ * Bitcoin takes up short IDs upto 128 (lower half) while Sparks can take
  * up short IDs between 128 and 256 (upper half) most of the array will
  * have entries that correspond to nothing.
  *
@@ -1135,7 +1136,7 @@ constexpr std::array<std::string_view, 256> V2ShortIDs() {
 bool IsValidV2ShortID(uint8_t first_byte) {
     // Since we have filled the namespace of short IDs, we have to preserve
     // the expected behaviour of coming up short when going beyond Bitcoin's
-    // and Dash's *used* slots. We do this by checking if the byte is within
+    // and Sparks's *used* slots. We do this by checking if the byte is within
     // the range where a valid message is expected to reside.
     return first_byte < std::size(V2_BITCOIN_IDS) ||
            (first_byte >= 128 && static_cast<uint8_t>(first_byte - 128) < std::size(V2_DASH_IDS));

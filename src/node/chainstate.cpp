@@ -94,7 +94,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
     }
 
     // TODO: Remove this when pruning is fixed.
-    // See https://github.com/dashpay/dash/pull/1817 and https://github.com/dashpay/dash/pull/1743
+    // See https://github.com/sparkspay/sparks/pull/1817 and https://github.com/sparkspay/sparks/pull/1743
     if (is_governance_enabled && !is_txindex_enabled && network_id != CBaseChainParams::REGTEST) {
         return ChainstateLoadingError::ERROR_TXINDEX_DISABLED_WHEN_GOV_ENABLED;
     }

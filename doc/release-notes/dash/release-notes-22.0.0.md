@@ -1,4 +1,4 @@
-# Dash Core version v22.0.0
+# Sparks Core version v22.0.0
 
 This is a new major version release, bringing new features, various bugfixes
 and other improvements.
@@ -7,7 +7,7 @@ This release is **mandatory** for all nodes, as it includes a hard fork.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/dashpay/dash/issues>
+  <https://github.com/sparkspay/sparks/issues>
 
 
 # Upgrading and downgrading
@@ -16,8 +16,8 @@ Please report bugs using the issue tracker at GitHub:
 
 If you are running an older version, shut it down. Wait until it has completely
 shut down (which might take a few minutes for older versions), then run the
-installer (on Windows) or just copy over /Applications/Dash-Qt (on Mac) or
-dashd/dash-qt (on Linux).
+installer (on Windows) or just copy over /Applications/Sparks-Qt (on Mac) or
+sparksd/sparks-qt (on Linux).
 
 ## Downgrade warning
 
@@ -36,7 +36,7 @@ likely require a reindex.
         - Allows using all **24 active quorums** and the most recent inactive quorum.
         - Previous versions may refuse withdrawals with `bad-assetunlock-not-active-quorum` even if the quorum is active.
     - **Withdrawal Limits Increased:**
-        - Flat **2000 Dash** per **576 latest blocks**. The previous limit was 1000 Dash.
+        - Flat **2000 Sparks** per **576 latest blocks**. The previous limit was 1000 Sparks.
 - **Increased Minimum Protocol Version**
     - The minimum protocol version has been increased to **70216**.
     - Masternode minimum protocol version has increased to **70235**.
@@ -65,9 +65,9 @@ likely require a reindex.
     - **User Impact:** Users no longer need to perform active measures to ensure connections to multiple enabled networks.
 
 - **BIP324 Encrypted Communication (Experimental)**
-    - Dash Core now experimentally implements [BIP324](https://github.com/bitcoin/bips/blob/master/bip-0324.mediawiki), introducing encrypted communication for P2P network traffic.
+    - Sparks Core now experimentally implements [BIP324](https://github.com/bitcoin/bips/blob/master/bip-0324.mediawiki), introducing encrypted communication for P2P network traffic.
     - **Opt-In Adoption**
-        - **Enable Encryption:** Users can opt-in to use BIP324 by adding `v2transport=1` to their Dash Core configuration.
+        - **Enable Encryption:** Users can opt-in to use BIP324 by adding `v2transport=1` to their Sparks Core configuration.
         - **Default Behavior:** Encryption is **disabled by default** as this is currently experimental.
     - **Benefits**
         - **Enhanced Privacy:** Encrypts P2P messages for v2 connections, reducing the risk of traffic analysis and eavesdropping.
@@ -81,13 +81,13 @@ likely require a reindex.
 ## Compatibility
 
 - **Dark Mode Appearance**
-    - Dash Core changes appearance when macOS "dark mode" is activated.
+    - Sparks Core changes appearance when macOS "dark mode" is activated.
 
 - **glibc Requirement**
-    - The minimum required glibc to run Dash Core is now **2.31**. This means that **RHEL 8** and **Ubuntu 18.04 (Bionic)** are no longer supported.
+    - The minimum required glibc to run sparks Core is now **2.31**. This means that **RHEL 8** and **Ubuntu 18.04 (Bionic)** are no longer supported.
 
 - **FreeBSD Improvements**
-    - Fixed issues with building Dash Core on FreeBSD.
+    - Fixed issues with building Sparks Core on FreeBSD.
 
 ## New RPCs
 
@@ -156,7 +156,7 @@ likely require a reindex.
     - `BRR` (`realloc`), `DIP0020`, `DIP0024`, `V19`, `V20`, and `MN_RR` hardforks are now activated at **block 2** instead of block **300** on devnets.
     - **Implications:**
         - Breaking change.
-        - Inability to sync on devnets created with earlier Dash Core versions and vice versa.
+        - Inability to sync on devnets created with earlier Sparks Core versions and vice versa.
 
 - **LLMQ Type Enhancement**
     - **LLMQ_50_60** is enabled for **Devnet** networks.
@@ -167,7 +167,7 @@ likely require a reindex.
 - **Regtest Network Softfork Activation Heights**
     - For the `regtest` network, the activation heights of several softforks have been set to **block height 1**.
     - **Customization:** Can be changed using the runtime setting `-testactivationheight=name@height`.
-    - *(dash#6214)*
+    - *(sparks#6214)*
 
 ## Statistics
 
@@ -192,7 +192,7 @@ likely require a reindex.
 
 - **Deprecation of `-platform-user`**
     - `-platform-user` is deprecated in favor of the whitelist feature.
-    - In releases **22.x** of Dash Core, it has been renamed to `-deprecated-platform-user`.
+    - In releases **22.x** of Sparks Core, it has been renamed to `-deprecated-platform-user`.
     - It will be removed in version **23.x**.
 
 - **`-statsenabled` Deprecation**
@@ -237,57 +237,57 @@ debug the release candidates.
 
 These releases are considered obsolete. Old release notes can be found here:
 
-- [v21.1.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-21.1.1.md) released Oct/22/2024
-- [v21.1.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-21.1.0.md) released Aug/8/2024
-- [v21.0.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-21.0.2.md) released Aug/1/2024
-- [v21.0.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-21.0.0.md) released Jul/25/2024
-- [v20.1.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-20.1.1.md) released April/3/2024
-- [v20.1.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-20.1.0.md) released March/5/2024
-- [v20.0.4](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-20.0.4.md) released Jan/13/2024
-- [v20.0.3](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-20.0.3.md) released December/26/2023
-- [v20.0.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-20.0.2.md) released December/06/2023
-- [v20.0.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-20.0.1.md) released November/18/2023
-- [v20.0.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-20.0.0.md) released November/15/2023
-- [v19.3.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-19.3.0.md) released July/31/2023
-- [v19.2.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-19.2.0.md) released June/19/2023
-- [v19.1.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-19.1.0.md) released May/22/2023
-- [v19.0.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-19.0.0.md) released Apr/14/2023
-- [v18.2.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-18.2.2.md) released Mar/21/2023
-- [v18.2.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-18.2.1.md) released Jan/17/2023
-- [v18.2.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-18.2.0.md) released Jan/01/2023
-- [v18.1.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-18.1.1.md) released January/08/2023
-- [v18.1.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-18.1.0.md) released October/09/2022
-- [v18.0.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-18.0.2.md) released October/09/2022
-- [v18.0.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-18.0.1.md) released August/17/2022
-- [v0.17.0.3](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.17.0.3.md) released June/07/2021
-- [v0.17.0.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.17.0.2.md) released May/19/2021
-- [v0.16.1.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.16.1.1.md) released November/17/2020
-- [v0.16.1.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.16.1.0.md) released November/14/2020
-- [v0.16.0.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.16.0.1.md) released September/30/2020
-- [v0.15.0.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.15.0.0.md) released Febrary/18/2020
-- [v0.14.0.5](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.14.0.5.md) released December/08/2019
-- [v0.14.0.4](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.14.0.4.md) released November/22/2019
-- [v0.14.0.3](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.14.0.3.md) released August/15/2019
-- [v0.14.0.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.14.0.2.md) released July/4/2019
-- [v0.14.0.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.14.0.1.md) released May/31/2019
-- [v0.14.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.14.0.md) released May/22/2019
-- [v0.13.3](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.13.3.md) released Apr/04/2019
-- [v0.13.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.13.2.md) released Mar/15/2019
-- [v0.13.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.13.1.md) released Feb/9/2019
-- [v0.13.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.13.0.md) released Jan/14/2019
-- [v0.12.3.4](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.3.4.md) released Dec/14/2018
-- [v0.12.3.3](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.3.3.md) released Sep/19/2018
-- [v0.12.3.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.3.2.md) released Jul/09/2018
-- [v0.12.3.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.3.1.md) released Jul/03/2018
-- [v0.12.2.3](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.2.3.md) released Jan/12/2018
-- [v0.12.2.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.2.2.md) released Dec/17/2017
-- [v0.12.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.2.md) released Nov/08/2017
-- [v0.12.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.1.md) released Feb/06/2017
-- [v0.12.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.12.0.md) released Aug/15/2015
-- [v0.11.2](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.11.2.md) released Mar/04/2015
-- [v0.11.1](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.11.1.md) released Feb/10/2015
-- [v0.11.0](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.11.0.md) released Jan/15/2015
-- [v0.10.x](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.10.0.md) released Sep/25/2014
-- [v0.9.x](https://github.com/dashpay/dash/blob/master/doc/release-notes/dash/release-notes-0.9.0.md) released Mar/13/2014
+- [v21.1.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-21.1.1.md) released Oct/22/2024
+- [v21.1.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-21.1.0.md) released Aug/8/2024
+- [v21.0.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-21.0.2.md) released Aug/1/2024
+- [v21.0.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-21.0.0.md) released Jul/25/2024
+- [v20.1.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-20.1.1.md) released April/3/2024
+- [v20.1.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-20.1.0.md) released March/5/2024
+- [v20.0.4](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-20.0.4.md) released Jan/13/2024
+- [v20.0.3](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-20.0.3.md) released December/26/2023
+- [v20.0.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-20.0.2.md) released December/06/2023
+- [v20.0.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-20.0.1.md) released November/18/2023
+- [v20.0.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-20.0.0.md) released November/15/2023
+- [v19.3.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-19.3.0.md) released July/31/2023
+- [v19.2.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-19.2.0.md) released June/19/2023
+- [v19.1.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-19.1.0.md) released May/22/2023
+- [v19.0.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-19.0.0.md) released Apr/14/2023
+- [v18.2.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-18.2.2.md) released Mar/21/2023
+- [v18.2.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-18.2.1.md) released Jan/17/2023
+- [v18.2.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-18.2.0.md) released Jan/01/2023
+- [v18.1.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-18.1.1.md) released January/08/2023
+- [v18.1.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-18.1.0.md) released October/09/2022
+- [v18.0.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-18.0.2.md) released October/09/2022
+- [v18.0.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-18.0.1.md) released August/17/2022
+- [v0.17.0.3](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.17.0.3.md) released June/07/2021
+- [v0.17.0.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.17.0.2.md) released May/19/2021
+- [v0.16.1.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.16.1.1.md) released November/17/2020
+- [v0.16.1.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.16.1.0.md) released November/14/2020
+- [v0.16.0.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.16.0.1.md) released September/30/2020
+- [v0.15.0.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.15.0.0.md) released Febrary/18/2020
+- [v0.14.0.5](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.14.0.5.md) released December/08/2019
+- [v0.14.0.4](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.14.0.4.md) released November/22/2019
+- [v0.14.0.3](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.14.0.3.md) released August/15/2019
+- [v0.14.0.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.14.0.2.md) released July/4/2019
+- [v0.14.0.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.14.0.1.md) released May/31/2019
+- [v0.14.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.14.0.md) released May/22/2019
+- [v0.13.3](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.13.3.md) released Apr/04/2019
+- [v0.13.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.13.2.md) released Mar/15/2019
+- [v0.13.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.13.1.md) released Feb/9/2019
+- [v0.13.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.13.0.md) released Jan/14/2019
+- [v0.12.3.4](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.3.4.md) released Dec/14/2018
+- [v0.12.3.3](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.3.3.md) released Sep/19/2018
+- [v0.12.3.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.3.2.md) released Jul/09/2018
+- [v0.12.3.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.3.1.md) released Jul/03/2018
+- [v0.12.2.3](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.2.3.md) released Jan/12/2018
+- [v0.12.2.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.2.2.md) released Dec/17/2017
+- [v0.12.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.2.md) released Nov/08/2017
+- [v0.12.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.1.md) released Feb/06/2017
+- [v0.12.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.12.0.md) released Aug/15/2015
+- [v0.11.2](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.11.2.md) released Mar/04/2015
+- [v0.11.1](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.11.1.md) released Feb/10/2015
+- [v0.11.0](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.11.0.md) released Jan/15/2015
+- [v0.10.x](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.10.0.md) released Sep/25/2014
+- [v0.9.x](https://github.com/sparkspay/sparks/blob/master/doc/release-notes/sparks/release-notes-0.9.0.md) released Mar/13/2014
 
-[set-of-changes]: https://github.com/dashpay/dash/compare/v21.1.1...dashpay:v22.0.0
+[set-of-changes]: https://github.com/sparkspay/sparks/compare/v21.1.1...sparkspay:v22.0.0

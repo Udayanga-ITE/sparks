@@ -156,8 +156,8 @@ static bool InitSettings()
 
     std::vector<std::string> errors;
     if (!gArgs.ReadSettingsFile(&errors)) {
-        std::string error = QT_TRANSLATE_NOOP("dash-core", "Settings file could not be read");
-        std::string error_translated = QCoreApplication::translate("dash-core", error.c_str()).toStdString();
+        std::string error = QT_TRANSLATE_NOOP("sparks-core", "Settings file could not be read");
+        std::string error_translated = QCoreApplication::translate("sparks-core", error.c_str()).toStdString();
         InitError(Untranslated(strprintf("%s:\n%s\n", error, MakeUnorderedList(errors))));
 
         QMessageBox messagebox(QMessageBox::Critical, PACKAGE_NAME, QString::fromStdString(strprintf("%s.", error_translated)), QMessageBox::Reset | QMessageBox::Abort);
@@ -179,8 +179,8 @@ static bool InitSettings()
 
     errors.clear();
     if (!gArgs.WriteSettingsFile(&errors)) {
-        std::string error = QT_TRANSLATE_NOOP("dash-core", "Settings file could not be written");
-        std::string error_translated = QCoreApplication::translate("dash-core", error.c_str()).toStdString();
+        std::string error = QT_TRANSLATE_NOOP("sparks-core", "Settings file could not be written");
+        std::string error_translated = QCoreApplication::translate("sparks-core", error.c_str()).toStdString();
         InitError(Untranslated(strprintf("%s:\n%s\n", error, MakeUnorderedList(errors))));
 
         QMessageBox messagebox(QMessageBox::Critical, PACKAGE_NAME, QString::fromStdString(strprintf("%s.", error_translated)), QMessageBox::Ok);

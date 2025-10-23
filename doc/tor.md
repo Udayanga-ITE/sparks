@@ -10,16 +10,16 @@ for how to properly configure Tor.
 
 ## Compatibility
 
-- Starting with version 20.0, Dash Core only supports Tor version 3 hidden
-  services (Tor v3). Tor v2 addresses are ignored by Dash Core and neither
+- Starting with version 20.0, Sparks Core only supports Tor version 3 hidden
+  services (Tor v3). Tor v2 addresses are ignored by Sparks Core and neither
   relayed nor stored.
 
 - Tor removed v2 support beginning with version 0.4.6.
 
 ## Compatibility
 
-- Starting with version 20.0, Dash Core only supports Tor version 3 hidden
-  services (Tor v3). Tor v2 addresses are ignored by Dash Core and neither
+- Starting with version 20.0, Sparks Core only supports Tor version 3 hidden
+  services (Tor v3). Tor v2 addresses are ignored by Sparks Core and neither
   relayed nor stored.
 
 - Tor removed v2 support beginning with version 0.4.6.

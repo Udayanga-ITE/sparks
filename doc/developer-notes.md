@@ -391,8 +391,8 @@ If the code is behaving strangely, take a look in the `debug.log` file in the da
 error and debugging messages are written there.
 
 Debug logging can be enabled on startup with the `-debug` and `-loglevel`
-configuration options and toggled while dashd is running with the `logging`
-RPC.  For instance, launching dashd with `-debug` or `-debug=1` will turn on
+configuration options and toggled while sparksd is running with the `logging`
+RPC.  For instance, launching sparksd with `-debug` or `-debug=1` will turn on
 all log categories and `-loglevel=trace` will turn on all log severity levels.
 
 The Qt code routes `qDebug()` output to `debug.log` under category "qt": run with `-debug=qt`
@@ -424,11 +424,11 @@ to the `debug.log` file.
 The `--enable-debug` configure option adds `-DDEBUG_LOCKCONTENTION` to the
 compiler flags. You may also enable it manually for a non-debug build by running
 configure with `-DDEBUG_LOCKCONTENTION` added to your CPPFLAGS,
-i.e. `CPPFLAGS="-DDEBUG_LOCKCONTENTION"`, then build and run dashd.
+i.e. `CPPFLAGS="-DDEBUG_LOCKCONTENTION"`, then build and run sparksd.
 
-You can then use the `-debug=lock` configuration option at dashd startup or
-`dash-cli logging '["lock"]'` at runtime to turn on lock contention logging.
-It can be toggled off again with `dash-cli logging [] '["lock"]'`.
+You can then use the `-debug=lock` configuration option at sparksd startup or
+`sparks-cli logging '["lock"]'` at runtime to turn on lock contention logging.
+It can be toggled off again with `sparks-cli logging [] '["lock"]'`.
 
 ### Assertions and Checks
 

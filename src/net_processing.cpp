@@ -319,7 +319,7 @@ struct Peer {
 
     /**
      * (Bitcoin) Initializes a TxRelay struct for this peer. Can be called at most once for a peer.
-     * (Dash)    Enables the flag that allows GetTxRelay() to return m_tx_relay */
+     * (Sparks)    Enables the flag that allows GetTxRelay() to return m_tx_relay */
     TxRelay* SetTxRelay() LOCKS_EXCLUDED(m_tx_relay_mutex)
     {
         LOCK(m_tx_relay_mutex);
@@ -427,7 +427,7 @@ private:
 
     /** Transaction relay data.
      * (Bitcoin) Transaction relay data. May be a nullptr.
-     * (Dash)    Always initialized but selectively available through GetTxRelay()
+     * (Sparks)    Always initialized but selectively available through GetTxRelay()
      *           (non-transaction relay should use GetInvRelay(), which will provide
      *           unconditional access) */
     std::unique_ptr<TxRelay> m_tx_relay GUARDED_BY(m_tx_relay_mutex){std::make_unique<TxRelay>()};

@@ -23,7 +23,7 @@ EXPECTED_CIRCULAR_DEPENDENCIES = (
     "wallet/fees -> wallet/wallet -> wallet/fees",
     "wallet/wallet -> wallet/walletdb -> wallet/wallet",
     "node/coinstats -> validation -> node/coinstats",
-    # Dash
+    # Sparks
     "banman -> common/bloom -> evo/assetlocktx -> llmq/quorums -> net -> banman",
     "banman -> common/bloom -> evo/assetlocktx -> llmq/signing -> net_processing -> banman",
     "coinjoin/client -> net_processing -> coinjoin/client",
