@@ -12,9 +12,13 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
         /*.gbt_force =*/ true,
     },
     {
+        /*.name =*/"mn_rr",
+        /*.gbt_force =*/false,
+    },
+    {
         /*.name =*/"withdrawals",
         /*.gbt_force =*/true,
-    },
+    }
 };
 
 std::string DeploymentName(Consensus::BuriedDeployment dep)

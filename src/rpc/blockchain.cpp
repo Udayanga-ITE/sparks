@@ -1497,6 +1497,7 @@ RPCHelpMan getblockchaininfo()
         SoftForkDescPushBack(&tip, softforks, consensusParams, deploy);
     }
     for (auto ehf_deploy : { /* sorted by activation block */
+                             Consensus::DEPLOYMENT_MN_RR,
                              Consensus::DEPLOYMENT_WITHDRAWALS,
                              Consensus::DEPLOYMENT_TESTDUMMY }) {
         SoftForkDescPushBack(&tip, ehfSignals, softforks, consensusParams, ehf_deploy);
