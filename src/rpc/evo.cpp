@@ -1849,7 +1849,7 @@ static UniValue datatx_get(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_REQUEST, "Your wallet is being ran with governance validation disabled. Can't use this command.\nThis is expected because you are running a pruned node.");
     }
 
-    if (request.params.size() != 3)
+    if (request.params.size() != 2)
         throw std::runtime_error(
             "datatx get \"txid\"\n"
 
@@ -1913,6 +1913,10 @@ static RPCHelpMan datatx()
                 #endif
                 "  get       - get a datatx payload by txid",
             },
+            {"data", RPCArg::Type::STR, RPCArg::Optional::OMITTED,
+                "Data payload (required for 'publish' command)."},
+            {"feeSourceAddress", RPCArg::Type::STR, RPCArg::Optional::OMITTED,
+                "Address to fund datatx transaction from (required for 'publish' command)."},            
         },
         RPCResults{},
         RPCExamples{
