@@ -19,7 +19,7 @@ from test_framework.util import (
 )
 from test_framework.wallet import MiniWallet
 
-DEFAULT_MEMPOOL_EXPIRY = 336  # hours
+DEFAULT_MEMPOOL_EXPIRY = 24  # hours
 CUSTOM_MEMPOOL_EXPIRY = 10  # hours
 
 
