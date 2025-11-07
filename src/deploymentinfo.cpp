@@ -18,6 +18,10 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
     {
         /*.name =*/"withdrawals",
         /*.gbt_force =*/true,
+    },
+    {
+        /*.name =*/"mn_ar",
+        /*.gbt_force =*/false,
     }
 };
 

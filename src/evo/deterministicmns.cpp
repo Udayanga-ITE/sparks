@@ -28,6 +28,9 @@
 
 static const std::string DB_LIST_SNAPSHOT = "dmn_S3";
 static const std::string DB_LIST_DIFF = "dmn_D3";
+// Constants for auto-revoke criteria
+static const int AUTO_REVOKE_BLOCK_THRESHOLD = 18000;
+static const int64_t AUTO_REVOKE_TIME_THRESHOLD = 90 * 24 * 60 * 60;
 
 uint64_t CDeterministicMN::GetInternalId() const
 {
@@ -1452,6 +1455,72 @@ bool CDeterministicMNManager::MigrateDBIfNeeded2()
     return true;
 }
 
+std::vector<uint256> CDeterministicMNManager::GetMnEligibleForAutoRevoke(const CDeterministicMNList& mnList, gsl::not_null<const CBlockIndex*> pindexPrev, MnType mnType) {
+    std::vector<uint256> result;
+
+    mnList.ForEachMN(false, [&](const auto& dmn) {
+        // Check masternode type is equal to given masternode type
+        if (dmn.nType != mnType) {
+            return;
+        }
+       
+        // Check block threshold
+        int currentBlockHeight = pindexPrev->nHeight;
+        int nLastPaidHeight = dmn.pdmnState->nLastPaidHeight;
+        int blocksSinceLastPaid = currentBlockHeight - nLastPaidHeight;
+        if (blocksSinceLastPaid < AUTO_REVOKE_BLOCK_THRESHOLD) {
+            return;
+        }
+
+        // Check time threshold
+        int64_t currentBlockTime = pindexPrev->GetBlockTime();
+        int64_t nPoSeBanTimestamp = (m_chainstate.m_chainman.ActiveChain()[dmn.pdmnState->GetBannedHeight()])->GetBlockTime();
+        int64_t timeSinceBan = currentBlockTime - nPoSeBanTimestamp;
+        if (timeSinceBan < AUTO_REVOKE_TIME_THRESHOLD) {
+            return;
+        }
+        
+        // This masternode meets all criteria for auto-revoke
+        result.push_back(dmn.proTxHash);
+        
+        LogPrintf("CDeterministicMNList::%s -- Masternode %s eligible for auto-revoke: "
+                 "lastPaidHeight=%d (blocks ago: %d), PoSeBanHeight=%d, banTimestamp=%d (days ago: %d)\n",
+                 __func__, dmn.proTxHash.ToString(), dmn.pdmnState->nLastPaidHeight, blocksSinceLastPaid,
+                 dmn.pdmnState->GetBannedHeight(), nPoSeBanTimestamp, timeSinceBan / (24 * 60 * 60));
+    });
+    
+    return result;
+}
+
+bool CDeterministicMNManager::IsMnEligibleForAutoRevoke(std::shared_ptr<const CDeterministicMN> dmn, gsl::not_null<const CBlockIndex*> pindexPrev, MnType mnType) const
+{
+    // Check masternode type is equal to given masternode type
+    if (dmn->nType != mnType) {
+        return false;
+    }
+        
+    // Check block threshold
+    int currentBlockHeight = pindexPrev->nHeight;
+    int nLastPaidHeight = dmn->pdmnState->nLastPaidHeight;
+    int blocksSinceLastPaid = currentBlockHeight - nLastPaidHeight;
+    if (blocksSinceLastPaid < AUTO_REVOKE_BLOCK_THRESHOLD) {
+        return false;
+    }
+    
+    // Check time threshold
+    int64_t currentBlockTime = pindexPrev->GetBlockTime();
+    int64_t nPoSeBanTimestamp = (m_chainstate.m_chainman.ActiveChain()[dmn->pdmnState->GetBannedHeight()])->GetBlockTime();
+    int64_t timeSinceBan = currentBlockTime - nPoSeBanTimestamp;
+    if (timeSinceBan < AUTO_REVOKE_TIME_THRESHOLD) {
+        return false;
+    }
+    
+    LogPrintf("CDeterministicMNList::%s -- Masternode %s eligible for auto-revoke: lastPaidHeight=%d (blocks ago: %d), PoSeBanTimestamp=%d (days ago: %d), PoSeBanHeight=%d\n",
+             __func__, dmn->proTxHash.ToString(), nLastPaidHeight, blocksSinceLastPaid,
+             nPoSeBanTimestamp, timeSinceBan / (24 * 60 * 60), dmn->pdmnState->GetBannedHeight());
+    return true;
+}
+
 template <typename ProTx>
 static bool CheckService(const ProTx& proTx, TxValidationState& state, const CBlockIndex* pindexPrev)
 {
@@ -1838,10 +1907,21 @@ bool CheckProUpRevTx(CDeterministicMNManager& dmnman, const CTransaction& tx, gs
         // pass the state returned by the function above
         return false;
     }
-    if (check_sigs && !CheckHashSig(*opt_ptx, dmn->pdmnState->pubKeyOperator.Get(), state)) {
+
+    // Check if this is an auto-revoke transaction
+    if (opt_ptx->nReason == CProUpRevTx::REASON_AUTO_REVOKE) {
+        // Verify masternode is eligible for auto-revoke
+        if (!dmnman.IsMnEligibleForAutoRevoke(dmn, pindexPrev, MnType::Regular)) {
+            return state.Invalid(TxValidationResult::TX_CONSENSUS, "bad-protx-auto-revoke-not-eligible");
+        }
+        
+        LogPrintf("CheckProUpRevTx -- Auto-revoke transaction validated for %s\n", 
+                  __func__, opt_ptx->proTxHash.ToString());
+    } else if (check_sigs && !CheckHashSig(*opt_ptx, dmn->pdmnState->pubKeyOperator.Get(), state)) {
         // pass the state returned by the function above
         return false;
     }
+
 
     return true;
 }

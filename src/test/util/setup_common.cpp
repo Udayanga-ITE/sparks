@@ -285,6 +285,7 @@ TestingSetup::TestingSetup(const std::string& chainName, const std::vector<const
                                            *Assert(m_node.mn_metaman.get()),
                                            *Assert(m_node.mn_sync.get()),
                                            *Assert(m_node.sporkman.get()),
+                                           m_node.peerman,
                                            m_node.mn_activeman,
                                            m_node.chain_helper,
                                            m_node.cpoolman,

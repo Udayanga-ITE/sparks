@@ -23,6 +23,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
                                                      CMasternodeMetaMan& mn_metaman,
                                                      CMasternodeSync& mn_sync,
                                                      CSporkManager& sporkman,
+                                                     std::unique_ptr<PeerManager>& peerman,
                                                      std::unique_ptr<CActiveMasternodeManager>& mn_activeman,
                                                      std::unique_ptr<CChainstateHelper>& chain_helper,
                                                      std::unique_ptr<CCreditPoolManager>& cpoolman,
@@ -61,7 +62,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
     mnhf_manager.reset();
     mnhf_manager = std::make_unique<CMNHFManager>(*evodb);
 
-    chainman.InitializeChainstate(mempool, *evodb, chain_helper, sporkman);
+    chainman.InitializeChainstate(mempool, peerman, *evodb, chain_helper, sporkman);
     chainman.m_total_coinstip_cache = nCoinCacheUsage;
     chainman.m_total_coinsdb_cache = nCoinDBCache;
 

@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <net_processing.h>
 
 class CActiveMasternodeManager;
 class CChainstateHelper;
@@ -81,6 +82,7 @@ std::optional<ChainstateLoadingError> LoadChainstate(bool fReset,
                                                      CMasternodeMetaMan& mn_metaman,
                                                      CMasternodeSync& mn_sync,
                                                      CSporkManager& sporkman,
+                                                     std::unique_ptr<PeerManager>& peerman,
                                                      std::unique_ptr<CActiveMasternodeManager>& mn_activeman,
                                                      std::unique_ptr<CChainstateHelper>& chain_helper,
                                                      std::unique_ptr<CCreditPoolManager>& cpoolman,

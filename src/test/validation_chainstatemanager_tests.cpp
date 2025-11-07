@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(chainstatemanager)
 
     // Create a legacy (IBD) chainstate.
     //
-    CChainState& c1 = WITH_LOCK(::cs_main, return manager.InitializeChainstate(&mempool, evodb, m_node.chain_helper, *m_node.sporkman));
+    CChainState& c1 = WITH_LOCK(::cs_main, return manager.InitializeChainstate(&mempool, m_node.peerman, evodb, m_node.chain_helper, *m_node.sporkman));
     chainstates.push_back(&c1);
     c1.InitCoinsDB(
         /* cache_size_bytes */ 1 << 23, /* in_memory */ true, /* should_wipe */ false);
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(chainstatemanager)
     //
     const uint256 snapshot_blockhash = GetRandHash();
     CChainState& c2 = WITH_LOCK(::cs_main, return manager.InitializeChainstate(
-        &mempool, evodb, m_node.chain_helper,
+        &mempool, m_node.peerman, evodb, m_node.chain_helper,
         *m_node.sporkman, snapshot_blockhash)
     );
     chainstates.push_back(&c2);
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(chainstatemanager_rebalance_caches)
 
     // Create a legacy (IBD) chainstate.
     //
-    CChainState& c1 = WITH_LOCK(cs_main, return manager.InitializeChainstate(&mempool, evodb, m_node.chain_helper, *m_node.sporkman));
+    CChainState& c1 = WITH_LOCK(cs_main, return manager.InitializeChainstate(&mempool, m_node.peerman, evodb, m_node.chain_helper, *m_node.sporkman));
     chainstates.push_back(&c1);
     c1.InitCoinsDB(
         /* cache_size_bytes */ 1 << 23, /* in_memory */ true, /* should_wipe */ false);
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(chainstatemanager_rebalance_caches)
 
     // Create a snapshot-based chainstate.
     //
-    CChainState& c2 = WITH_LOCK(cs_main, return manager.InitializeChainstate(&mempool, evodb, m_node.chain_helper, *m_node.sporkman, GetRandHash()));
+    CChainState& c2 = WITH_LOCK(cs_main, return manager.InitializeChainstate(&mempool, m_node.peerman, evodb, m_node.chain_helper, *m_node.sporkman, GetRandHash()));
     chainstates.push_back(&c2);
     c2.InitCoinsDB(
         /* cache_size_bytes */ 1 << 23, /* in_memory */ true, /* should_wipe */ false);
@@ -401,7 +401,7 @@ BOOST_FIXTURE_TEST_CASE(chainstatemanager_loadblockindex, TestChain100Setup)
     BOOST_CHECK_EQUAL(expected_assumed_valid, num_assumed_valid);
 
     CChainState& cs2 = WITH_LOCK(::cs_main,
-        return chainman.InitializeChainstate(&mempool, *m_node.evodb, m_node.chain_helper, *m_node.sporkman, GetRandHash()));
+        return chainman.InitializeChainstate(&mempool, m_node.peerman, *m_node.evodb, m_node.chain_helper, *m_node.sporkman, GetRandHash()));
 
     reload_all_block_indexes();
 

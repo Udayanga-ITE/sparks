@@ -42,6 +42,7 @@ enum DeploymentPos : uint16_t {
     DEPLOYMENT_TESTDUMMY,
     DEPLOYMENT_MN_RR,   // Deployment of Masternode Reward Location Reallocation
     DEPLOYMENT_WITHDRAWALS, // Deployment of Fix for quorum selection for withdrawals
+    DEPLOYMENT_MN_AR,   // Deployment of Masternode Auto Revoking When expired
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in deploymentinfo.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
 };
@@ -176,6 +177,7 @@ struct Params {
     uint32_t nRuleChangeActivationThreshold;
     // Default BIP9Deployment::nWindowSize value for deployments where it's not specified and for unknown deployments.
     uint32_t nMinerConfirmationWindow;
+
     BIP9Deployment vDeployments[MAX_VERSION_BITS_DEPLOYMENTS];
     /** Proof of work parameters */
     uint256 powLimit;

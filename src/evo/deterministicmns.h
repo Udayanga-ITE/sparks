@@ -649,6 +649,8 @@ public:
 
     void DoMaintenance() EXCLUSIVE_LOCKS_REQUIRED(!cs);
 
+    std::vector<uint256> GetMnEligibleForAutoRevoke(const CDeterministicMNList& mnList, gsl::not_null<const CBlockIndex*> pindexPrev, MnType mnType = MnType::Regular);
+    bool IsMnEligibleForAutoRevoke(std::shared_ptr<const CDeterministicMN> dmn, gsl::not_null<const CBlockIndex*> pindexPrev, MnType mnType = MnType::Regular) const;
 private:
     void CleanupCache(int nHeight) EXCLUSIVE_LOCKS_REQUIRED(cs);
     CDeterministicMNList GetListForBlockInternal(gsl::not_null<const CBlockIndex*> pindex) EXCLUSIVE_LOCKS_REQUIRED(cs);

@@ -488,6 +488,8 @@ protected:
     //! Only the active chainstate has a mempool.
     CTxMemPool* m_mempool;
 
+    std::unique_ptr<PeerManager>& m_peerman;
+
     //! Manages the UTXO set, which is a reflection of the contents of `m_chain`.
     std::unique_ptr<CoinsViews> m_coins_views;
 
@@ -510,6 +512,7 @@ public:
     ChainstateManager& m_chainman;
 
     explicit CChainState(CTxMemPool* mempool,
+                         std::unique_ptr<PeerManager>& peerman,
                          BlockManager& blockman,
                          ChainstateManager& chainman,
                          CEvoDB& evoDb,
@@ -945,6 +948,7 @@ public:
     //! @param[in] snapshot_blockhash   If given, signify that this chainstate
     //!                                 is based on a snapshot.
     CChainState& InitializeChainstate(CTxMemPool* mempool,
+                                      std::unique_ptr<PeerManager>& peerman,
                                       CEvoDB& evoDb,
                                       const std::unique_ptr<CChainstateHelper>& chain_helper,
                                       CSporkManager& spork_manager,

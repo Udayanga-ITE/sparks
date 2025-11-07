@@ -60,6 +60,7 @@
 #include <evo/specialtxman.h>
 #include <llmq/chainlocks.h>
 #include <masternode/payments.h>
+#include <masternode/utils.h>
 #include <stats/client.h>
 
 #include <algorithm>
@@ -1567,6 +1568,7 @@ void CoinsViews::InitCache()
 }
 
 CChainState::CChainState(CTxMemPool* mempool,
+                         std::unique_ptr<PeerManager>& peerman,
                          BlockManager& blockman,
                          ChainstateManager& chainman,
                          CEvoDB& evoDb,
@@ -1574,6 +1576,7 @@ CChainState::CChainState(CTxMemPool* mempool,
                          CSporkManager& spork_manager,
                          std::optional<uint256> from_snapshot_blockhash)
     : m_mempool(mempool),
+      m_peerman(peerman),
       m_chain_helper(chain_helper),
       m_evoDb(evoDb),
       m_blockman(blockman),
@@ -2364,7 +2367,7 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
         }
     }
 
-    /// SPARKS: Check superblock start
+    // Sparks: Check superblock start
 
     // make sure old budget is the real one
     if (pindex->nHeight == m_params.GetConsensus().nSuperblockStartBlock &&
@@ -2630,8 +2633,21 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
 
     int64_t nTime5 = GetTimeMicros(); nTimeSparksSpecific += nTime5 - nTime4;
     LogPrint(BCLog::BENCHMARK, "    - Sparks specific: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime5 - nTime4), nTimeSparksSpecific * MICRO, nTimeSparksSpecific * MILLI / nBlocksTotal);
+    
+    // Sparks: Process auto-revoke for inactive masternodes
+    if (!fJustCheck && pindex->nHeight >= m_params.GetConsensus().DIP0003Height) {
+        // Check if we've reached activation height
+        if (DeploymentActiveAt(*pindex, m_params.GetConsensus(), Consensus::DEPLOYMENT_MN_AR)) {
+            std::unique_ptr<CDeterministicMNManager> dmnman = std::make_unique<CDeterministicMNManager>(m_chainman.ActiveChainstate(), m_evoDb);
+            if (!CMasternodeAutoRevokeProcessor::ProcessAutoRevokes(m_chainman, m_peerman, spork_manager, *dmnman.get(), pindex)) {
+                // Log but don't fail the block - auto-revoke is auxiliary functionality
+                LogPrintf("WARNING: %s: Auto-revoke processing encountered issues at height %d: %s\n", 
+                         __func__, pindex->nHeight, state.ToString());
+            }
+        }
+    }
 
-    // END SPARKS
+    // END Sparks
 
     if (fJustCheck)
         return true;
@@ -5609,6 +5625,7 @@ std::vector<CChainState*> ChainstateManager::GetAll()
 }
 
 CChainState& ChainstateManager::InitializeChainstate(CTxMemPool* mempool,
+                                                     std::unique_ptr<PeerManager>& peerman,
                                                      CEvoDB& evoDb,
                                                      const std::unique_ptr<CChainstateHelper>& chain_helper,
                                                      CSporkManager& spork_manager,
@@ -5623,7 +5640,7 @@ CChainState& ChainstateManager::InitializeChainstate(CTxMemPool* mempool,
         throw std::logic_error("should not be overwriting a chainstate");
     }
 
-    to_modify.reset(new CChainState(mempool, m_blockman, *this, evoDb, chain_helper, spork_manager, snapshot_blockhash));
+    to_modify.reset(new CChainState(mempool, peerman, m_blockman, *this, evoDb, chain_helper, spork_manager, snapshot_blockhash));
 
     // Snapshot chainstates and initial IBD chaintates always become active.
     if (is_snapshot || (!is_snapshot && !m_active_chainstate)) {
@@ -5693,7 +5710,7 @@ bool ChainstateManager::ActivateSnapshot(
     }
 
     auto snapshot_chainstate = WITH_LOCK(::cs_main, return std::make_unique<CChainState>(
-            /* mempool */ nullptr, m_blockman, *this,
+            /* mempool */ nullptr, this->ActiveChainstate().m_peerman, m_blockman, *this,
             this->ActiveChainstate().m_evoDb,
             this->ActiveChainstate().m_chain_helper,
             this->ActiveChainstate().m_spork_manager,

@@ -278,14 +278,15 @@ public:
         REASON_TERMINATION_OF_SERVICE = 1,
         REASON_COMPROMISED_KEYS = 2,
         REASON_CHANGE_OF_KEYS = 3,
-        REASON_LAST = REASON_CHANGE_OF_KEYS
+        REASON_AUTO_REVOKE = 100, // used for auto-revoked masternodes for Sparks
+        REASON_LAST = REASON_AUTO_REVOKE,
     };
 
     uint16_t nVersion{LEGACY_BLS_VERSION}; // message version
     uint256 proTxHash;
     uint16_t nReason{REASON_NOT_SPECIFIED};
     uint256 inputsHash; // replay protection
-    CBLSSignature sig;
+    CBLSSignature sig; // Can be empty for auto-revoke
 
     SERIALIZE_METHODS(CProUpRevTx, obj)
     {
