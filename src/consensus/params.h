@@ -42,6 +42,7 @@ enum DeploymentPos : uint16_t {
     DEPLOYMENT_TESTDUMMY,
     DEPLOYMENT_MN_RR,   // Deployment of Masternode Reward Location Reallocation
     DEPLOYMENT_WITHDRAWALS, // Deployment of Fix for quorum selection for withdrawals
+    DEPLOYMENT_V22, // Deployment of v22 ~ Regular Masternodes enabling again
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in deploymentinfo.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
 };
