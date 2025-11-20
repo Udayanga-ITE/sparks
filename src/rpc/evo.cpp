@@ -1670,9 +1670,9 @@ static RPCHelpMan protx_help()
         "To get help on individual commands, use \"help protx command\".\n"
         "\nAvailable commands:\n"
 #ifdef ENABLE_WALLET
-        // "  register                 - Create and send ProTx to network\n"
-        // "  register_fund            - Fund, create and send ProTx to network\n"
-        // "  register_prepare         - Create an unsigned ProTx\n"
+        "  register                 - Create and send ProTx to network\n"
+        "  register_fund            - Fund, create and send ProTx to network\n"
+        "  register_prepare         - Create an unsigned ProTx\n"
         "  register_evo             - Create and send ProTx to network for an EvoNode\n"
         "  register_fund_evo        - Fund, create and send ProTx to network for an EvoNode\n"
         "  register_prepare_evo     - Create an unsigned ProTx for an EvoNode\n"
@@ -1684,7 +1684,7 @@ static RPCHelpMan protx_help()
         "  list                     - List ProTxs\n"
         "  info                     - Return information about a ProTx\n"
 #ifdef ENABLE_WALLET
-        // "  update_service           - Create and send ProUpServTx to network\n"
+        "  update_service           - Create and send ProUpServTx to network\n"
         "  update_service_evo       - Create and send ProUpServTx to network for an EvoNode\n"
         "  update_registrar         - Create and send ProUpRegTx to network\n"
         "  update_registrar_legacy  - Create ProUpRegTx by parsing BLS using the legacy scheme, then send it to network\n"
@@ -1959,16 +1959,16 @@ static const CRPCCommand commands[] =
     { "evo",                &protx_diff,                       },
     { "evo",                &protx_listdiff,                   },
 #ifdef ENABLE_WALLET
-    // { "evo",                &protx_register,                   },
+    { "evo",                &protx_register,                   },
     { "evo",                &protx_register_evo,               },
     { "evo",                &protx_register_legacy,            },
-    // { "evo",                &protx_register_fund,              },
+    { "evo",                &protx_register_fund,              },
     { "evo",                &protx_register_fund_legacy,       },
     { "evo",                &protx_register_fund_evo,          },
-    // { "evo",                &protx_register_prepare,           },
+    { "evo",                &protx_register_prepare,           },
     { "evo",                &protx_register_prepare_evo,       },
     { "evo",                &protx_register_prepare_legacy,    },
-    // { "evo",                &protx_update_service,             },
+    { "evo",                &protx_update_service,             },
     { "evo",                &protx_update_service_evo,         },
     { "evo",                &protx_register_submit,            },
     { "evo",                &protx_update_registrar,           },

@@ -771,14 +771,7 @@ bool CDeterministicMNManager::BuildNewListFromBlock(const CBlock& block, gsl::no
             }
 
             Coin coin;
-            CAmount expectedCollateral;
-            if (!isV19Active) {
-                expectedCollateral = 25000 * COIN; //Old regular masternode collateral
-            } else if (isV19Active && pindexPrev->nHeight < Params().GetConsensus().V19Height && proTx.nType == MnType::Regular){
-                expectedCollateral = 25000 * COIN; //Old regular masternode collateral
-            } else {
-                expectedCollateral = GetMnType(proTx.nType, pindexPrev).collat_amount;
-            }
+            CAmount expectedCollateral = GetMnType(proTx.nType, pindexPrev).collat_amount;
             if (!proTx.collateralOutpoint.hash.IsNull() && (!view.GetCoin(dmn->collateralOutpoint, coin) || coin.IsSpent() || coin.out.nValue != expectedCollateral)) {
                 // should actually never get to this point as CheckProRegTx should have handled this case.
                 // We do this additional check nevertheless to be 100% sure
@@ -1137,17 +1130,9 @@ bool CDeterministicMNManager::IsProTxWithCollateral(const CTransactionRef& tx, u
         return false;
     }
 
-    CAmount expectedCollateral;
-    const bool isV19Active{DeploymentActiveAt(pindex, Params().GetConsensus(), Consensus::DEPLOYMENT_V19)};
-    if (!isV19Active) {
-        expectedCollateral = 25000 * COIN; //Old regular masternode collateral
-    } else if (isV19Active && pindex.nHeight < Params().GetConsensus().V19Height && proTx.nType == MnType::Regular){
-        expectedCollateral = 25000 * COIN; //Old regular masternode collateral
-    } else {
-        expectedCollateral = GetMnType(proTx.nType, &pindex).collat_amount;
-    }
+    CAmount expectedCollateral = GetMnType(proTx.nType, &pindex).collat_amount;
   
-    if (const CAmount expectedCollateral = GetMnType(proTx.nType, &pindex).collat_amount; tx->vout[n].nValue != expectedCollateral) {
+    if (tx->vout[n].nValue != expectedCollateral) {
         return false;
     }
     return true;
@@ -1599,15 +1584,7 @@ bool CheckProRegTx(CDeterministicMNManager& dmnman, const CTransaction& tx, gsl:
     const PKHash *keyForPayloadSig = nullptr;
     COutPoint collateralOutpoint;
 
-    CAmount expectedCollateral;
-    const bool isV19Active{DeploymentActiveAfter(pindexPrev, Params().GetConsensus(), Consensus::DEPLOYMENT_V19)};
-    if (!isV19Active) {
-        expectedCollateral = 25000 * COIN; //Old regular masternode collateral
-    } else if (isV19Active && pindexPrev->nHeight < Params().GetConsensus().V19Height && opt_ptx->nType == MnType::Regular){
-        expectedCollateral = 25000 * COIN; //Old regular masternode collateral
-    } else {
-        expectedCollateral = GetMnType(opt_ptx->nType, pindexPrev).collat_amount;
-    }
+    CAmount expectedCollateral = GetMnType(opt_ptx->nType, pindexPrev).collat_amount;
 
     if (!opt_ptx->collateralOutpoint.hash.IsNull()) {
         Coin coin;

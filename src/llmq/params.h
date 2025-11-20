@@ -40,7 +40,11 @@ enum class LLMQType : uint8_t {
     LLMQ_TEST_PLATFORM = 106,    // 3 members, 2 (66%) threshold, one per hour.
 
     // for devnets only. rotated version (v2) for devnets
-    LLMQ_DEVNET_DIP0024 = 105 // 8 members, 4 (50%) threshold, one per hour. Params might differ when -llmqdevnetparams is used
+    LLMQ_DEVNET_DIP0024 = 105, // 8 members, 4 (50%) threshold, one per hour. Params might differ when -llmqdevnetparams is used
+
+    // Custom quorums for large MN + EvoNode network
+    LLMQ_100_70_REGULAR = 110,   // 100 members, 70 (70%) threshold, regular MNs
+    LLMQ_25_80_EVONODE = 111,    // 25 members, 20 (80%) threshold, EvoNodes
 };
 
 // Configures a LLMQ and its DKG
@@ -132,7 +136,7 @@ static_assert(std::is_trivially_copyable_v<Consensus::LLMQParams>, "LLMQParams i
 static_assert(std::is_trivially_assignable_v<Consensus::LLMQParams, Consensus::LLMQParams>, "LLMQParams is not trivially assignable");
 
 
-static constexpr std::array<LLMQParams, 18> available_llmqs = {
+static constexpr std::array<LLMQParams, 20> available_llmqs = {
 
     /**
      * llmq_test
@@ -567,6 +571,50 @@ static constexpr std::array<LLMQParams, 18> available_llmqs = {
 
         .keepOldConnections = 25,
         .keepOldKeys = 24 * 30 * 2, // 2 months of quorums
+        .recoveryMembers = 12,
+    },
+
+    // Regular Masternodes
+    LLMQParams{
+        .type = LLMQType::LLMQ_100_70_REGULAR,
+        .name = "llmq_100_70_regular",
+        .useRotation = true,
+        .size = 100,
+        .minSize = 90,
+        .threshold = 70,
+
+        .dkgInterval = 24,       // DKG every hour
+        .dkgPhaseBlocks = 3,
+        .dkgMiningWindowStart = 15,
+        .dkgMiningWindowEnd = 40,
+        .dkgBadVotesThreshold = 75,
+
+        .signingActiveQuorumCount = 8, // keep multiple active
+
+        .keepOldConnections = 16,
+        .keepOldKeys = 16,
+        .recoveryMembers = 50,
+    },
+
+    // Evolutionnodes
+    LLMQParams{
+        .type = LLMQType::LLMQ_25_80_EVONODE,
+        .name = "llmq_25_80_evnode",
+        .useRotation = false,
+        .size = 25,
+        .minSize = 22,
+        .threshold = 20,
+
+        .dkgInterval = 12,       // faster DKG
+        .dkgPhaseBlocks = 2,
+        .dkgMiningWindowStart = 5,
+        .dkgMiningWindowEnd = 12,
+        .dkgBadVotesThreshold = 18,
+
+        .signingActiveQuorumCount = 4,
+
+        .keepOldConnections = 8,
+        .keepOldKeys = 16,
         .recoveryMembers = 12,
     },
 
