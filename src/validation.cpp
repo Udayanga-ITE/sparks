@@ -147,7 +147,7 @@ bool fRequireStandard = true;
 bool fCheckBlockIndex = false;
 bool fCheckpointsEnabled = DEFAULT_CHECKPOINTS_ENABLED;
 uint64_t nPruneTarget = 0;
-int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
+int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE * 4 * 60; // in seconds
 
 // TODO: drop this global variable. Used by net.cpp module only
 std::atomic<bool> fDIP0001ActiveAtTip{false};
